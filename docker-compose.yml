@@ -1,0 +1,19 @@
+services:
+  backend:
+    build: .
+    ports:
+      - 8000:3000
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15.3
+    restart: always
+    environment:
+      POSTGRES_DB: nest_admin  # The name of the PostgreSQL database to be created
+      POSTGRES_USER: postgres  # The PostgreSQL user
+      POSTGRES_PASSWORD: AndySatu989!e  # The password for the PostgreSQL user
+    volumes:
+      - ./.pgdata:/var/lib/postgresql/data  # Volume for persisting PostgreSQL data
