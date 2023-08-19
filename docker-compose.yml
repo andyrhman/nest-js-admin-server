@@ -17,3 +17,5 @@ services:
       POSTGRES_PASSWORD: AndySatu989!e  # The password for the PostgreSQL user
     volumes:
       - ./.pgdata:/var/lib/postgresql/data  # Volume for persisting PostgreSQL data
+    ports:
+      - 54322:5432
