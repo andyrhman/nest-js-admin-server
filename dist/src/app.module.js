@@ -14,6 +14,7 @@ const user_module_1 = require("./user/user.module");
 const typeorm_1 = require("@nestjs/typeorm");
 const config_module_1 = require("../config/config.module");
 const config_1 = require("@nestjs/config");
+const auth_module_1 = require("./auth/auth.module");
 let AppModule = exports.AppModule = class AppModule {
 };
 exports.AppModule = AppModule = __decorate([
@@ -32,6 +33,7 @@ exports.AppModule = AppModule = __decorate([
                 autoLoadEntities: true,
                 synchronize: true,
             }),
+            auth_module_1.AuthModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

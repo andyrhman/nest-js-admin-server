@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigurationModule } from 'config/config.module';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     UserModule,
@@ -21,6 +22,7 @@ import { ConfigModule } from '@nestjs/config';
       autoLoadEntities: true, //delete if production
       synchronize: true,
     }),
+    AuthModule,
 
   ],
   controllers: [AppController],

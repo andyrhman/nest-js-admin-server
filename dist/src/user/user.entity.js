@@ -42,6 +42,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], User.prototype, "addId", null);
 exports.User = User = __decorate([
-    (0, typeorm_1.Entity)()
+    (0, typeorm_1.Entity)('users')
 ], User);
 //# sourceMappingURL=user.entity.js.map

@@ -1,0 +1,4 @@
+# Ignore node_modules for argon2 or other packages that has error ELF
+# https://medium.com/@devontem/solved-invalid-elf-header-with-docker-and-bcrypt-444426d63605
+# https://stackoverflow.com/questions/69319614/invalid-elf-header-argon2-package
+node_modules 

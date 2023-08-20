@@ -17,5 +17,12 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
+  },
+  // Use this for docker-compose if it doesn't listen for changes of files
+  // https://stackoverflow.com/questions/74476459/why-is-my-docker-container-not-listening-to-changes-in-my-files
+  "watchOptions": {
+    "watchFile": "dynamicprioritypolling",
+    "watchDirectory": "dynamicprioritypolling",
+    "fallbackPolling": "dynamicpriority"
   }
 }
