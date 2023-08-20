@@ -1,4 +1,4 @@
-import { User } from './user.entity';
+import { User } from './models/user.entity';
 import { Repository } from 'typeorm';
 export declare class UserService {
     private readonly userRepository;

@@ -1,11 +1,25 @@
-import { Controller, Get, Post, Body, BadRequestException, NotFoundException, Res, Req } from '@nestjs/common';
+import { 
+    Controller, 
+    Get, 
+    Post, 
+    Body, 
+    BadRequestException, 
+    NotFoundException, 
+    Res, 
+    Req, 
+    UseInterceptors, 
+    ClassSerializerInterceptor, 
+    UseGuards 
+} from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import * as argon2 from 'argon2';
 import * as Joi from 'joi';
 import { RegisterDto } from './models/register.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
+import { AuthGuard } from './auth.guard';
 
+@UseInterceptors(ClassSerializerInterceptor) // hide the password
 @Controller()
 export class AuthController {
     constructor(
@@ -16,7 +30,7 @@ export class AuthController {
     @Post('register')
     async register(
         @Body() body: RegisterDto,
-        @Res({ passthrough: true }) response: Response
+        @Res() response: Response
     ) {
         if (body.password !== body.confirm_password) {
             throw new BadRequestException("Password do not match.")
@@ -47,7 +61,7 @@ export class AuthController {
     async login(
         @Body('email') email: string,
         @Body('password') password: string,
-        @Res() response: Response
+        @Res({passthrough: true}) response: Response
     ) {
         const user = await this.userService.findOne({ email });
 
@@ -68,15 +82,31 @@ export class AuthController {
     }
 
     // Getting the authenticated user.
+    @UseGuards(AuthGuard)
     @Get('user')
     async user(
-        @Req() request: Request
+        @Req() request: Request,
+        @Res({passthrough: true}) response: Response
     ){
         //Finding jwt in the cookies
         const cookie = request.cookies['jwt'];
 
         const data = await this.jwtService.verifyAsync(cookie);
 
+        response.status(200);
         return this.userService.findOne({id: data['id']});
+    }
+
+    // Getting the authenticated user.
+    @UseGuards(AuthGuard)
+    @Post('logout')
+    async logout(
+        @Res({passthrough: true}) response: Response
+    ){
+        response.clearCookie('jwt');
+
+        return {
+            message: "success"
+        }
     }
 }
