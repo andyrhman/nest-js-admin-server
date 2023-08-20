@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, BadRequestException, NotFoundException, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, BadRequestException, NotFoundException, Res, Req } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import * as argon2 from 'argon2';
 import * as Joi from 'joi';
 import { RegisterDto } from './models/register.dto';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 
 @Controller()
 export class AuthController {
@@ -47,7 +47,7 @@ export class AuthController {
     async login(
         @Body('email') email: string,
         @Body('password') password: string,
-        @Res({ passthrough: true }) response: Response
+        @Res() response: Response
     ) {
         const user = await this.userService.findOne({ email });
 
@@ -63,8 +63,20 @@ export class AuthController {
 
         response.cookie('jwt', jwt, { httpOnly: true });
         response.status(200);
-        
+
         return user;
     }
 
+    // Getting the authenticated user.
+    @Get('user')
+    async user(
+        @Req() request: Request
+    ){
+        //Finding jwt in the cookies
+        const cookie = request.cookies['jwt'];
+
+        const data = await this.jwtService.verifyAsync(cookie);
+
+        return this.userService.findOne({id: data['id']});
+    }
 }

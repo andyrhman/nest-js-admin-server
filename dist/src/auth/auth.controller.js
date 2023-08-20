@@ -52,6 +52,11 @@ let AuthController = exports.AuthController = class AuthController {
         response.status(200);
         return user;
     }
+    async user(request) {
+        const cookie = request.cookies['jwt'];
+        const data = await this.jwtService.verifyAsync(cookie);
+        return this.userService.findOne({ id: data['id'] });
+    }
 };
 __decorate([
     (0, common_1.Post)('register'),
@@ -65,11 +70,18 @@ __decorate([
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Body)('email')),
     __param(1, (0, common_1.Body)('password')),
-    __param(2, (0, common_1.Res)({ passthrough: true })),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Get)('user'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "user", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [user_service_1.UserService,
