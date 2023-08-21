@@ -1,16 +1,17 @@
-import { IsNotEmpty, IsEmail } from "class-validator";
+import { IsNotEmpty, IsEmail, Length } from "class-validator";
 
 export class RegisterDto {
-    @IsNotEmpty()
-    username : string;
+    @IsNotEmpty({ message: 'Username is required' })
+    username: string;
 
-    @IsNotEmpty()
-    @IsEmail()
-    email : string;
+    @IsNotEmpty({ message: 'Email is required' })
+    @IsEmail({}, { message: 'Invalid email format' })
+    email: string;
 
-    @IsNotEmpty()
-    password : string;
+    @IsNotEmpty({ message: 'Password is required' })
+    @Length(6, undefined, { message: 'Password must be at least 6 characters long' })
+    password: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Confirm password is required' })
     confirm_password: string;
 }

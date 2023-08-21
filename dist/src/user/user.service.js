@@ -24,6 +24,30 @@ let UserService = exports.UserService = class UserService {
     async all() {
         return await this.userRepository.find();
     }
+    async paginate(page = 1) {
+        const take = 1;
+        const [users, total] = await this.userRepository.findAndCount({
+            take,
+            skip: (page - 1) * take
+        });
+        return {
+            data: users,
+            meta: {
+                total,
+                page,
+                last_page: Math.ceil(total / take)
+            }
+        };
+    }
+    async create(data) {
+        return this.userRepository.save(data);
+    }
+    async update(id, data) {
+        return this.userRepository.update(id, data);
+    }
+    async delete(id) {
+        return this.userRepository.delete(id);
+    }
     async findOne(options) {
         return this.userRepository.findOne({ where: options });
     }
@@ -32,8 +56,11 @@ let UserService = exports.UserService = class UserService {
             where: [{ username }, { email }],
         });
     }
-    async create(data) {
-        return this.userRepository.save(data);
+    async findByEmail(email) {
+        return this.userRepository.findOne({ where: { email } });
+    }
+    async findByUsername(username) {
+        return this.userRepository.findOne({ where: { username } });
     }
 };
 exports.UserService = UserService = __decorate([

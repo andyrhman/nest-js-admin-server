@@ -1,20 +1,24 @@
-import { 
-    BadRequestException, 
-    Body, 
-    Controller, 
-    Get, 
-    Post, 
-    UseInterceptors, 
-    ClassSerializerInterceptor, 
-    UseGuards, 
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Get,
+    Post,
+    UseInterceptors,
+    ClassSerializerInterceptor,
+    UseGuards,
     Param,
-    NotFoundException
-} 
-from '@nestjs/common';
+    NotFoundException,
+    Put,
+    Delete,
+    Query
+}
+    from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './models/user.entity';
 import * as argon2 from 'argon2';
-import { UserDto } from './models/user.dto';
+import { UserCreateDto } from './models/user-create.dto';
+import { UserUpdateDto } from './models/user-update.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { isUUID } from 'class-validator'; // Import class-validator for UUID validation
 
@@ -22,17 +26,17 @@ import { isUUID } from 'class-validator'; // Import class-validator for UUID val
 @UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
-    constructor(private userService: UserService){
+    constructor(private userService: UserService) {
 
     }
 
     @Get()
-    async all(): Promise<User[]>{
-        return await this.userService.all();
+    async all(@Query('page') page: number = 1): Promise<User[]> {
+        return await this.userService.paginate(page);
     }
 
     @Post()
-    async create(@Body() body: UserDto): Promise<User> {
+    async create(@Body() body: UserCreateDto): Promise<User> {
         const password = await argon2.hash('123456')
 
         // Check if the username or email already exists
@@ -54,16 +58,50 @@ export class UserController {
 
     @Get(':id')
     async get(@Param('id') id: string) {
-      if (!isUUID(id)) {
-        throw new BadRequestException('Invalid UUID format');
-      }
-  
-      const search = await this.userService.findOne({ id });
-  
-      if (!search) {
-        throw new NotFoundException('User not found');
-      }
-  
-      return search;
+        if (!isUUID(id)) {
+            throw new BadRequestException('Invalid UUID format');
+        }
+
+        const search = await this.userService.findOne({ id });
+
+        if (!search) {
+            throw new NotFoundException('User not found');
+        }
+
+        return search;
+    }
+
+    @Put(':id')
+    async update(
+        @Param('id') id: string,
+        @Body() body: UserUpdateDto,
+
+    ) {
+        const existingUsername = await this.userService.findByUsername(body.username);
+
+        if (existingUsername) {
+            throw new BadRequestException('Username already exists');
+        }
+
+        const existingEmail = await this.userService.findByEmail(body.email);
+
+        if (existingEmail) {
+            throw new BadRequestException('Email already exists');
+        }
+
+        await this.userService.update(id, body);
+
+        return this.userService.findOne({ id });
+    }
+
+    @Delete(':id')
+    async delete(
+        @Param('id') id: string,
+    ) {
+        await this.userService.delete(id);
+
+        return {
+            message: "User deleted sucessfully"
+        }
     }
 }
