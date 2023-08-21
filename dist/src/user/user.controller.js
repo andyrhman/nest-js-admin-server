@@ -17,12 +17,13 @@ const common_1 = require("@nestjs/common");
 const user_service_1 = require("./user.service");
 const argon2 = require("argon2");
 const user_create_dto_1 = require("./models/user-create.dto");
-const user_update_dto_1 = require("./models/user-update.dto");
 const auth_guard_1 = require("../auth/auth.guard");
 const class_validator_1 = require("class-validator");
+const role_service_1 = require("../role/role.service");
 let UserController = exports.UserController = class UserController {
-    constructor(userService) {
+    constructor(userService, roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
     async all(page = 1) {
         return await this.userService.paginate(page);
@@ -36,7 +37,8 @@ let UserController = exports.UserController = class UserController {
         return this.userService.create({
             username: body.username,
             email: body.email,
-            password
+            password,
+            role: { id: body.role_id }
         });
     }
     async get(id) {
@@ -50,15 +52,36 @@ let UserController = exports.UserController = class UserController {
         return search;
     }
     async update(id, body) {
-        const existingUsername = await this.userService.findByUsername(body.username);
-        if (existingUsername) {
-            throw new common_1.BadRequestException('Username already exists');
+        if (!(0, class_validator_1.isUUID)(id)) {
+            throw new common_1.BadRequestException('Invalid UUID format');
         }
-        const existingEmail = await this.userService.findByEmail(body.email);
-        if (existingEmail) {
-            throw new common_1.BadRequestException('Email already exists');
+        const existingUser = await this.userService.findOne({ id });
+        if (!existingUser) {
+            throw new common_1.NotFoundException('User not found');
         }
-        await this.userService.update(id, body);
+        const { username, email, role_id } = body;
+        if (username && username !== existingUser.username) {
+            const existingUsername = await this.userService.findByUsername(username);
+            if (existingUsername) {
+                throw new common_1.BadRequestException('Username already exists');
+            }
+            existingUser.username = username;
+        }
+        if (email && email !== existingUser.email) {
+            const existingEmail = await this.userService.findByEmail(email);
+            if (existingEmail) {
+                throw new common_1.BadRequestException('Email already exists');
+            }
+            existingUser.email = email;
+        }
+        if (role_id) {
+            const role = await this.roleService.findOne({ id: role_id });
+            if (!role) {
+                throw new common_1.NotFoundException('Role not found');
+            }
+            existingUser.role = role;
+        }
+        await this.userService.update(id, existingUser);
         return this.userService.findOne({ id });
     }
     async delete(id) {
@@ -94,7 +117,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, user_update_dto_1.UserUpdateDto]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "update", null);
 __decorate([
@@ -108,6 +131,7 @@ exports.UserController = UserController = __decorate([
     (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)('users'),
-    __metadata("design:paramtypes", [user_service_1.UserService])
+    __metadata("design:paramtypes", [user_service_1.UserService,
+        role_service_1.RoleService])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

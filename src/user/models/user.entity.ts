@@ -1,6 +1,7 @@
 // user.entity.ts
 import { Exclude } from 'class-transformer';
-import { Column, Entity, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import { Role } from 'src/role/models/role.entity';
+import { Column, Entity, PrimaryGeneratedColumn, BeforeInsert, ManyToOne, JoinColumn } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
 @Entity('users')
@@ -24,4 +25,9 @@ export class User {
       this.id = uuidv4();
     }
   }
+
+  // Role (Many) to User (one) relationship
+  @ManyToOne(() => Role)
+  @JoinColumn({name: "role_id"})
+  role: Role;
 }

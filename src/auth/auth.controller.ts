@@ -30,7 +30,7 @@ export class AuthController {
     @Post('register')
     async register(
         @Body() body: RegisterDto,
-        @Res() response: Response
+        @Res({passthrough: true}) response: Response
     ) {
         if (body.password !== body.confirm_password) {
             throw new BadRequestException("Password do not match.")
@@ -53,7 +53,8 @@ export class AuthController {
         return this.userService.create({
             username: body.username,
             email: body.email,
-            password: hashPassword
+            password: hashPassword,
+            role: {id: "3"}
         });
     }
 

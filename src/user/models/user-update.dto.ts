@@ -7,4 +7,7 @@ export class UserUpdateDto {
     @IsNotEmpty({ message: 'Email is required' })
     @IsEmail({}, { message: 'Invalid email format' })
     email: string;
+
+    @IsNotEmpty({ message: 'Role is required' })
+    role_id: number;
 }

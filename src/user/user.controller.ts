@@ -18,15 +18,18 @@ import { UserService } from './user.service';
 import { User } from './models/user.entity';
 import * as argon2 from 'argon2';
 import { UserCreateDto } from './models/user-create.dto';
-import { UserUpdateDto } from './models/user-update.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { isUUID } from 'class-validator'; // Import class-validator for UUID validation
+import { RoleService } from 'src/role/role.service';
 
 @UseInterceptors(ClassSerializerInterceptor) // hide the password
 @UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
-    constructor(private userService: UserService) {
+    constructor(
+        private userService: UserService,
+        private roleService: RoleService
+    ) {
 
     }
 
@@ -37,7 +40,7 @@ export class UserController {
 
     @Post()
     async create(@Body() body: UserCreateDto): Promise<User> {
-        const password = await argon2.hash('123456')
+        const password = await argon2.hash('123456');
 
         // Check if the username or email already exists
         const existingUser = await this.userService.findByUsernameOrEmail(
@@ -52,7 +55,8 @@ export class UserController {
         return this.userService.create({
             username: body.username,
             email: body.email,
-            password
+            password,
+            role: { id: body.role_id }
         });
     }
 
@@ -74,22 +78,49 @@ export class UserController {
     @Put(':id')
     async update(
         @Param('id') id: string,
-        @Body() body: UserUpdateDto,
-
+        @Body() body: any,
     ) {
-        const existingUsername = await this.userService.findByUsername(body.username);
-
-        if (existingUsername) {
-            throw new BadRequestException('Username already exists');
+        if (!isUUID(id)) {
+            throw new BadRequestException('Invalid UUID format');
         }
 
-        const existingEmail = await this.userService.findByEmail(body.email);
+        const existingUser = await this.userService.findOne({ id });
 
-        if (existingEmail) {
-            throw new BadRequestException('Email already exists');
+        if (!existingUser) {
+            throw new NotFoundException('User not found');
         }
 
-        await this.userService.update(id, body);
+        const { username, email, role_id } = body;
+
+        // Check if username already exists and is different from the existing one
+        if (username && username !== existingUser.username) {
+            const existingUsername = await this.userService.findByUsername(username);
+            if (existingUsername) {
+                throw new BadRequestException('Username already exists');
+            }
+            existingUser.username = username;
+        }
+
+        // Check if email already exists and is different from the existing one
+        if (email && email !== existingUser.email) {
+            const existingEmail = await this.userService.findByEmail(email);
+            if (existingEmail) {
+                throw new BadRequestException('Email already exists');
+            }
+            existingUser.email = email;
+        }
+
+        // Update the role if role_id is provided
+        if (role_id) {
+            const role = await this.roleService.findOne({ id: role_id });
+            if (!role) {
+                throw new NotFoundException('Role not found');
+            }
+            existingUser.role = role;
+        }
+
+        // Perform the update
+        await this.userService.update(id, existingUser);
 
         return this.userService.findOne({ id });
     }

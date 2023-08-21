@@ -37,7 +37,8 @@ let AuthController = exports.AuthController = class AuthController {
         return this.userService.create({
             username: body.username,
             email: body.email,
-            password: hashPassword
+            password: hashPassword,
+            role: { id: "3" }
         });
     }
     async login(email, password, response) {
@@ -69,7 +70,7 @@ let AuthController = exports.AuthController = class AuthController {
 __decorate([
     (0, common_1.Post)('register'),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Res)()),
+    __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [register_dto_1.RegisterDto, Object]),
     __metadata("design:returntype", Promise)

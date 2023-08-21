@@ -9,22 +9,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserUpdateDto = void 0;
-const class_validator_1 = require("class-validator");
-class UserUpdateDto {
-}
-exports.UserUpdateDto = UserUpdateDto;
+exports.Role = void 0;
+const typeorm_1 = require("typeorm");
+let Role = exports.Role = class Role {
+};
 __decorate([
-    (0, class_validator_1.IsNotEmpty)({ message: 'Username is required' }),
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", String)
-], UserUpdateDto.prototype, "username", void 0);
+], Role.prototype, "id", void 0);
 __decorate([
-    (0, class_validator_1.IsNotEmpty)({ message: 'Email is required' }),
-    (0, class_validator_1.IsEmail)({}, { message: 'Invalid email format' }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], UserUpdateDto.prototype, "email", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)({ message: 'Role is required' }),
-    __metadata("design:type", Number)
-], UserUpdateDto.prototype, "role_id", void 0);
-//# sourceMappingURL=user-update.dto.js.map
+], Role.prototype, "name", void 0);
+exports.Role = Role = __decorate([
+    (0, typeorm_1.Entity)('roles')
+], Role);
+//# sourceMappingURL=role.entity.js.map
