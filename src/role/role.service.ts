@@ -17,16 +17,16 @@ export class RoleService {
         return this.roleRepository.save(data);
     }
 
-    async update(id: string, data): Promise<any> {
+    async update(id: number, data): Promise<any> {
         return this.roleRepository.update(id, data);
     }
 
-    async delete(id: string): Promise<any> {
+    async delete(id: number): Promise<any> {
         return this.roleRepository.delete(id);
     }
 
     async findOne(options) {
-        return this.roleRepository.findOne({ where: options });
+        return this.roleRepository.findOne({ where: options, relations: ['permissions'] });
     }
 
 }

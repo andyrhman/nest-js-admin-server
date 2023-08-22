@@ -1,4 +1,6 @@
+import { Permission } from 'src/permission/models/permission.entity';
 export declare class Role {
-    id: string;
+    id: number;
     name: string;
+    permissions: Permission[];
 }

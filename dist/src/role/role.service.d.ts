@@ -5,7 +5,7 @@ export declare class RoleService {
     constructor(roleRepository: Repository<Role>);
     all(): Promise<Role[]>;
     create(data: any): Promise<Role>;
-    update(id: string, data: any): Promise<any>;
-    delete(id: string): Promise<any>;
+    update(id: number, data: any): Promise<any>;
+    delete(id: number): Promise<any>;
     findOne(options: any): Promise<Role>;
 }

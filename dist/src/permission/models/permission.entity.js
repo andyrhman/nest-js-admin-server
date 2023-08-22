@@ -9,18 +9,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserDto = void 0;
-const class_validator_1 = require("class-validator");
-class UserDto {
-}
-exports.UserDto = UserDto;
+exports.Permission = void 0;
+const typeorm_1 = require("typeorm");
+let Permission = exports.Permission = class Permission {
+};
 __decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], UserDto.prototype, "username", void 0);
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], Permission.prototype, "id", void 0);
 __decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsEmail)(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], UserDto.prototype, "email", void 0);
-//# sourceMappingURL=user.dto.js.map
+], Permission.prototype, "name", void 0);
+exports.Permission = Permission = __decorate([
+    (0, typeorm_1.Entity)('permissions')
+], Permission);
+//# sourceMappingURL=permission.entity.js.map

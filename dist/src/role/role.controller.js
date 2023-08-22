@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleController = void 0;
 const common_1 = require("@nestjs/common");
 const role_service_1 = require("./role.service");
-const class_validator_1 = require("class-validator");
 let RoleController = exports.RoleController = class RoleController {
     constructor(roleService) {
         this.roleService = roleService;
@@ -23,22 +22,26 @@ let RoleController = exports.RoleController = class RoleController {
     async all() {
         return this.roleService.all();
     }
-    async create(name) {
-        return this.roleService.create({ name });
+    async create(name, ids) {
+        return this.roleService.create({
+            name,
+            permissions: ids.map(id => ({ id }))
+        });
     }
     async get(id) {
-        if (!(0, class_validator_1.isUUID)(id)) {
-            throw new common_1.BadRequestException('Invalid UUID format');
-        }
         const search = await this.roleService.findOne({ id });
         if (!search) {
             throw new common_1.NotFoundException('Role not found');
         }
         return search;
     }
-    async update(id, name) {
+    async update(id, name, ids) {
+        const role = await this.roleService.findOne({ id });
         await this.roleService.update(id, { name });
-        return this.roleService.findOne({ id });
+        return this.roleService.create({
+            ...role,
+            permissions: ids.map(id => ({ id }))
+        });
     }
     async delete(id) {
         await this.roleService.delete(id);
@@ -56,30 +59,32 @@ __decorate([
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)('name')),
+    __param(1, (0, common_1.Body)('permissions')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Array]),
     __metadata("design:returntype", Promise)
 ], RoleController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], RoleController.prototype, "get", null);
 __decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)('name')),
+    __param(2, (0, common_1.Body)('permissions')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [Number, String, Array]),
     __metadata("design:returntype", Promise)
 ], RoleController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], RoleController.prototype, "delete", null);
 exports.RoleController = RoleController = __decorate([

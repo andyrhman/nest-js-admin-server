@@ -12,34 +12,25 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RoleService = void 0;
+exports.PermissionService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const role_entity_1 = require("./models/role.entity");
+const permission_entity_1 = require("./models/permission.entity");
 const typeorm_2 = require("typeorm");
-let RoleService = exports.RoleService = class RoleService {
-    constructor(roleRepository) {
-        this.roleRepository = roleRepository;
+let PermissionService = exports.PermissionService = class PermissionService {
+    constructor(permissionRepository) {
+        this.permissionRepository = permissionRepository;
     }
     async all() {
-        return this.roleRepository.find();
-    }
-    async create(data) {
-        return this.roleRepository.save(data);
-    }
-    async update(id, data) {
-        return this.roleRepository.update(id, data);
-    }
-    async delete(id) {
-        return this.roleRepository.delete(id);
+        return this.permissionRepository.find();
     }
     async findOne(options) {
-        return this.roleRepository.findOne({ where: options, relations: ['permissions'] });
+        return this.permissionRepository.findOne({ where: options });
     }
 };
-exports.RoleService = RoleService = __decorate([
+exports.PermissionService = PermissionService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(role_entity_1.Role)),
+    __param(0, (0, typeorm_1.InjectRepository)(permission_entity_1.Permission)),
     __metadata("design:paramtypes", [typeorm_2.Repository])
-], RoleService);
-//# sourceMappingURL=role.service.js.map
+], PermissionService);
+//# sourceMappingURL=permission.service.js.map

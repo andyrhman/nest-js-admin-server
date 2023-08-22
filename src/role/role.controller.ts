@@ -1,5 +1,5 @@
-import { 
-    Controller, 
+import {
+    Controller,
     Get,
     Body,
     Put,
@@ -8,35 +8,41 @@ import {
     BadRequestException,
     NotFoundException,
     Post
-} 
-from '@nestjs/common';
+}
+    from '@nestjs/common';
 import { RoleService } from './role.service';
-import { isUUID } from 'class-validator'; // Import class-validator for UUID validation
-
 
 @Controller('roles')
 export class RoleController {
     constructor(
         private roleService: RoleService
-    ){}
+    ) { }
 
     @Get()
-    async all(){
+    async all() {
         return this.roleService.all();
     }
 
     @Post()
     async create(
-        @Body('name') name: string
-    ){
-        return this.roleService.create({name});
+        @Body('name') name: string,
+        @Body('permissions') ids: number[]
+    ) {
+        /*
+            [1, 2]
+
+            [
+                {id: 1}, {id: 2}
+            ]
+        */
+        return this.roleService.create({
+            name,
+            permissions: ids.map(id => ({ id }))
+        });
     }
 
     @Get(':id')
-    async get(@Param('id') id: string) {
-        if (!isUUID(id)) {
-            throw new BadRequestException('Invalid UUID format');
-        }
+    async get(@Param('id') id: number) {
 
         const search = await this.roleService.findOne({ id });
 
@@ -49,17 +55,23 @@ export class RoleController {
 
     @Put(':id')
     async update(
-        @Param('id') id: string,
+        @Param('id') id: number,
         @Body('name') name: string,
+        @Body('permissions') ids: number[]
     ) {
-        await this.roleService.update(id, {name});
+        const role = await this.roleService.findOne({ id });
 
-        return this.roleService.findOne({ id });
+        await this.roleService.update(id, {name});
+        
+        return this.roleService.create({
+            ...role,
+            permissions: ids.map(id => ({ id }))
+        });
     }
 
     @Delete(':id')
     async delete(
-        @Param('id') id: string,
+        @Param('id') id: number,
     ) {
         await this.roleService.delete(id);
 

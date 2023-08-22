@@ -10,17 +10,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Role = void 0;
+const permission_entity_1 = require("../../permission/models/permission.entity");
 const typeorm_1 = require("typeorm");
 let Role = exports.Role = class Role {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], Role.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Role.prototype, "name", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => permission_entity_1.Permission, { cascade: true }),
+    (0, typeorm_1.JoinTable)({
+        name: "role_permissions",
+        joinColumn: { name: "role_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "permission_id", referencedColumnName: "id" }
+    }),
+    __metadata("design:type", Array)
+], Role.prototype, "permissions", void 0);
 exports.Role = Role = __decorate([
     (0, typeorm_1.Entity)('roles')
 ], Role);

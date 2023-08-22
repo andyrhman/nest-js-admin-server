@@ -6,24 +6,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RoleModule = void 0;
+exports.PermissionModule = void 0;
 const common_1 = require("@nestjs/common");
-const role_controller_1 = require("./role.controller");
-const role_service_1 = require("./role.service");
-const role_entity_1 = require("./models/role.entity");
+const permission_service_1 = require("./permission.service");
+const permission_controller_1 = require("./permission.controller");
 const typeorm_1 = require("@nestjs/typeorm");
-const permission_module_1 = require("../permission/permission.module");
-let RoleModule = exports.RoleModule = class RoleModule {
+const permission_entity_1 = require("./models/permission.entity");
+let PermissionModule = exports.PermissionModule = class PermissionModule {
 };
-exports.RoleModule = RoleModule = __decorate([
+exports.PermissionModule = PermissionModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([role_entity_1.Role]),
-            permission_module_1.PermissionModule
+            typeorm_1.TypeOrmModule.forFeature([permission_entity_1.Permission]),
         ],
-        controllers: [role_controller_1.RoleController],
-        providers: [role_service_1.RoleService],
-        exports: [role_service_1.RoleService]
+        providers: [permission_service_1.PermissionService],
+        controllers: [permission_controller_1.PermissionController],
+        exports: [permission_service_1.PermissionService]
     })
-], RoleModule);
-//# sourceMappingURL=role.module.js.map
+], PermissionModule);
+//# sourceMappingURL=permission.module.js.map
