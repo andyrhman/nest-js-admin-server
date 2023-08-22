@@ -6,9 +6,9 @@ export declare class AuthController {
     private userService;
     private jwtService;
     constructor(userService: UserService, jwtService: JwtService);
-    register(body: RegisterDto, response: Response): Promise<import("../user/models/user.entity").User>;
-    login(email: string, password: string, response: Response): Promise<import("../user/models/user.entity").User>;
-    user(request: Request, response: Response): Promise<import("../user/models/user.entity").User>;
+    register(body: RegisterDto, response: Response): Promise<any>;
+    login(email: string, password: string, response: Response): Promise<any>;
+    user(request: Request, response: Response): Promise<any>;
     logout(response: Response): Promise<{
         message: string;
     }>;

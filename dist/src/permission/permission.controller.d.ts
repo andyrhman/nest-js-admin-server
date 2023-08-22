@@ -2,5 +2,5 @@ import { PermissionService } from './permission.service';
 export declare class PermissionController {
     private permissinService;
     constructor(permissinService: PermissionService);
-    all(): Promise<import("./models/permission.entity").Permission[]>;
+    all(): Promise<any[]>;
 }

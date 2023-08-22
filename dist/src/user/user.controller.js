@@ -26,7 +26,7 @@ let UserController = exports.UserController = class UserController {
         this.roleService = roleService;
     }
     async all(page = 1) {
-        return await this.userService.paginate(page);
+        return await this.userService.paginate(page, ['role']);
     }
     async create(body) {
         const password = await argon2.hash('123456');
@@ -45,7 +45,7 @@ let UserController = exports.UserController = class UserController {
         if (!(0, class_validator_1.isUUID)(id)) {
             throw new common_1.BadRequestException('Invalid UUID format');
         }
-        const search = await this.userService.findOne({ id });
+        const search = await this.userService.findOne({ id }, ['role']);
         if (!search) {
             throw new common_1.NotFoundException('User not found');
         }

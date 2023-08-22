@@ -16,7 +16,7 @@ let Role = exports.Role = class Role {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], Role.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),

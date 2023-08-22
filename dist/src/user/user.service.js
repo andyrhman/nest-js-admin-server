@@ -17,50 +17,21 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("./models/user.entity");
 const typeorm_2 = require("typeorm");
-let UserService = exports.UserService = class UserService {
+const abstract_service_1 = require("../common/abstract.service");
+let UserService = exports.UserService = class UserService extends abstract_service_1.AbstractService {
     constructor(userRepository) {
+        super(userRepository);
         this.userRepository = userRepository;
     }
-    async all() {
-        return await this.userRepository.find();
-    }
-    async paginate(page = 1) {
-        const take = 1;
-        const [users, total] = await this.userRepository.findAndCount({
-            take,
-            skip: (page - 1) * take
-        });
+    async paginate(page = 1, relations = []) {
+        const { data, meta } = await super.paginate(page, relations);
         return {
-            data: users,
-            meta: {
-                total,
-                page,
-                last_page: Math.ceil(total / take)
-            }
+            data: data.map(user => {
+                const { password, ...data } = user;
+                return data;
+            }),
+            meta
         };
-    }
-    async create(data) {
-        return this.userRepository.save(data);
-    }
-    async update(id, data) {
-        return this.userRepository.update(id, data);
-    }
-    async delete(id) {
-        return this.userRepository.delete(id);
-    }
-    async findOne(options) {
-        return this.userRepository.findOne({ where: options });
-    }
-    async findByUsernameOrEmail(username, email) {
-        return this.userRepository.findOne({
-            where: [{ username }, { email }],
-        });
-    }
-    async findByEmail(email) {
-        return this.userRepository.findOne({ where: { email } });
-    }
-    async findByUsername(username) {
-        return this.userRepository.findOne({ where: { username } });
     }
 };
 exports.UserService = UserService = __decorate([

@@ -34,8 +34,8 @@ export class UserController {
     }
 
     @Get()
-    async all(@Query('page') page: number = 1): Promise<User[]> {
-        return await this.userService.paginate(page);
+    async all(@Query('page') page: number = 1) {
+        return await this.userService.paginate(page, ['role']);
     }
 
     @Post()
@@ -66,7 +66,7 @@ export class UserController {
             throw new BadRequestException('Invalid UUID format');
         }
 
-        const search = await this.userService.findOne({ id });
+        const search = await this.userService.findOne({ id }, ['role']);
 
         if (!search) {
             throw new NotFoundException('User not found');

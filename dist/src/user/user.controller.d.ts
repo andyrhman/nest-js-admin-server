@@ -6,10 +6,10 @@ export declare class UserController {
     private userService;
     private roleService;
     constructor(userService: UserService, roleService: RoleService);
-    all(page?: number): Promise<User[]>;
+    all(page?: number): Promise<import("../common/paginated-result.interface").PaginatedResult>;
     create(body: UserCreateDto): Promise<User>;
-    get(id: string): Promise<User>;
-    update(id: string, body: any): Promise<User>;
+    get(id: string): Promise<any>;
+    update(id: string, body: any): Promise<any>;
     delete(id: string): Promise<{
         message: string;
     }>;

@@ -17,15 +17,11 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const permission_entity_1 = require("./models/permission.entity");
 const typeorm_2 = require("typeorm");
-let PermissionService = exports.PermissionService = class PermissionService {
+const abstract_service_1 = require("../common/abstract.service");
+let PermissionService = exports.PermissionService = class PermissionService extends abstract_service_1.AbstractService {
     constructor(permissionRepository) {
+        super(permissionRepository);
         this.permissionRepository = permissionRepository;
-    }
-    async all() {
-        return this.permissionRepository.find();
-    }
-    async findOne(options) {
-        return this.permissionRepository.findOne({ where: options });
     }
 };
 exports.PermissionService = PermissionService = __decorate([

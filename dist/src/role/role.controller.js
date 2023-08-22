@@ -29,15 +29,15 @@ let RoleController = exports.RoleController = class RoleController {
         });
     }
     async get(id) {
-        const search = await this.roleService.findOne({ id });
+        const search = await this.roleService.findOne({ id }, ['permissions']);
         if (!search) {
             throw new common_1.NotFoundException('Role not found');
         }
         return search;
     }
     async update(id, name, ids) {
-        const role = await this.roleService.findOne({ id });
         await this.roleService.update(id, { name });
+        const role = await this.roleService.findOne({ id });
         return this.roleService.create({
             ...role,
             permissions: ids.map(id => ({ id }))
@@ -46,7 +46,7 @@ let RoleController = exports.RoleController = class RoleController {
     async delete(id) {
         await this.roleService.delete(id);
         return {
-            message: "User deleted sucessfully"
+            message: "Role deleted sucessfully"
         };
     }
 };
@@ -77,14 +77,14 @@ __decorate([
     __param(1, (0, common_1.Body)('name')),
     __param(2, (0, common_1.Body)('permissions')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String, Array]),
+    __metadata("design:paramtypes", [String, String, Array]),
     __metadata("design:returntype", Promise)
 ], RoleController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RoleController.prototype, "delete", null);
 exports.RoleController = RoleController = __decorate([

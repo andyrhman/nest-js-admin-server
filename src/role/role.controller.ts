@@ -44,7 +44,7 @@ export class RoleController {
     @Get(':id')
     async get(@Param('id') id: number) {
 
-        const search = await this.roleService.findOne({ id });
+        const search = await this.roleService.findOne({ id }, ['permissions']);
 
         if (!search) {
             throw new NotFoundException('Role not found');
@@ -55,13 +55,13 @@ export class RoleController {
 
     @Put(':id')
     async update(
-        @Param('id') id: number,
+        @Param('id') id: string,
         @Body('name') name: string,
         @Body('permissions') ids: number[]
     ) {
-        const role = await this.roleService.findOne({ id });
-
         await this.roleService.update(id, {name});
+
+        const role = await this.roleService.findOne({ id });
         
         return this.roleService.create({
             ...role,
@@ -71,12 +71,12 @@ export class RoleController {
 
     @Delete(':id')
     async delete(
-        @Param('id') id: number,
+        @Param('id') id: string,
     ) {
         await this.roleService.delete(id);
 
         return {
-            message: "User deleted sucessfully"
+            message: "Role deleted sucessfully"
         }
     }
 }

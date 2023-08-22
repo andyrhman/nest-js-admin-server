@@ -17,24 +17,11 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const role_entity_1 = require("./models/role.entity");
 const typeorm_2 = require("typeorm");
-let RoleService = exports.RoleService = class RoleService {
+const abstract_service_1 = require("../common/abstract.service");
+let RoleService = exports.RoleService = class RoleService extends abstract_service_1.AbstractService {
     constructor(roleRepository) {
+        super(roleRepository);
         this.roleRepository = roleRepository;
-    }
-    async all() {
-        return this.roleRepository.find();
-    }
-    async create(data) {
-        return this.roleRepository.save(data);
-    }
-    async update(id, data) {
-        return this.roleRepository.update(id, data);
-    }
-    async delete(id) {
-        return this.roleRepository.delete(id);
-    }
-    async findOne(options) {
-        return this.roleRepository.findOne({ where: options, relations: ['permissions'] });
     }
 };
 exports.RoleService = RoleService = __decorate([

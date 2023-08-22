@@ -1,4 +1,4 @@
 export declare class Permission {
-    id: number;
+    id: string;
     name: string;
 }
