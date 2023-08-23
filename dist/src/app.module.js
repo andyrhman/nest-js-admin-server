@@ -16,6 +16,7 @@ const auth_module_1 = require("./auth/auth.module");
 const common_module_1 = require("./common/common.module");
 const role_module_1 = require("./role/role.module");
 const permission_module_1 = require("./permission/permission.module");
+const product_module_1 = require("./product/product.module");
 let AppModule = exports.AppModule = class AppModule {
 };
 exports.AppModule = AppModule = __decorate([
@@ -38,6 +39,7 @@ exports.AppModule = AppModule = __decorate([
             common_module_1.CommonModule,
             role_module_1.RoleModule,
             permission_module_1.PermissionModule,
+            product_module_1.ProductModule,
         ],
     })
 ], AppModule);
