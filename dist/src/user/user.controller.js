@@ -20,10 +20,12 @@ const user_create_dto_1 = require("./models/user-create.dto");
 const auth_guard_1 = require("../auth/auth.guard");
 const class_validator_1 = require("class-validator");
 const role_service_1 = require("../role/role.service");
+const auth_service_1 = require("../auth/auth.service");
 let UserController = exports.UserController = class UserController {
-    constructor(userService, roleService) {
+    constructor(userService, roleService, authService) {
         this.userService = userService;
         this.roleService = roleService;
+        this.authService = authService;
     }
     async all(page = 1) {
         return await this.userService.paginate(page, ['role']);
@@ -50,6 +52,40 @@ let UserController = exports.UserController = class UserController {
             throw new common_1.NotFoundException('User not found');
         }
         return search;
+    }
+    async updateInfo(request, body) {
+        const id = await this.authService.userId(request);
+        const existingUser = await this.userService.findOne({ id });
+        if (!existingUser) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        if (body.email && body.email !== existingUser.email) {
+            const existingUserByEmail = await this.userService.findByEmail(body.email);
+            if (existingUserByEmail) {
+                throw new common_1.ConflictException('Email already exists');
+            }
+            existingUser.email = body.email;
+        }
+        if (body.username && body.username !== existingUser.username) {
+            const existingUserByUsername = await this.userService.findByUsername(body.username);
+            if (existingUserByUsername) {
+                throw new common_1.ConflictException('Username already exists');
+            }
+            existingUser.username = body.username;
+        }
+        await this.userService.update(id, existingUser);
+        return this.userService.findOne({ id });
+    }
+    async updatePassword(request, body) {
+        if (body.password !== body.confirm_password) {
+            throw new common_1.BadRequestException("Password do not match.");
+        }
+        const id = await this.authService.userId(request);
+        const hashPassword = await argon2.hash(body.password);
+        await this.userService.update(id, {
+            password: hashPassword
+        });
+        return this.userService.findOne({ id });
     }
     async update(id, body) {
         if (!(0, class_validator_1.isUUID)(id)) {
@@ -113,6 +149,22 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "get", null);
 __decorate([
+    (0, common_1.Put)('info'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateInfo", null);
+__decorate([
+    (0, common_1.Put)('password'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updatePassword", null);
+__decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -132,6 +184,7 @@ exports.UserController = UserController = __decorate([
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [user_service_1.UserService,
-        role_service_1.RoleService])
+        role_service_1.RoleService,
+        auth_service_1.AuthService])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

@@ -18,13 +18,15 @@ import { RegisterDto } from './models/register.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
 import { AuthGuard } from './auth.guard';
+import { AuthService } from './auth.service';
 
 @UseInterceptors(ClassSerializerInterceptor) // hide the password
 @Controller()
 export class AuthController {
     constructor(
         private userService: UserService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private authService: AuthService
     ) { }
 
     @Post('register')
@@ -33,7 +35,7 @@ export class AuthController {
         @Res({passthrough: true}) response: Response
     ) {
         if (body.password !== body.confirm_password) {
-            throw new BadRequestException("Password do not match.")
+            throw new BadRequestException("Password do not match.");
         }
 
         // Check if the username or email already exists
@@ -87,15 +89,10 @@ export class AuthController {
     @Get('user')
     async user(
         @Req() request: Request,
-        @Res({passthrough: true}) response: Response
     ){
-        //Finding jwt in the cookies
-        const cookie = request.cookies['jwt'];
+        const id = await this.authService.userId(request);
 
-        const data = await this.jwtService.verifyAsync(cookie);
-
-        response.status(200);
-        return this.userService.findOne({id: data['id']});
+        return this.userService.findOne({id});
     }
 
     // Getting the authenticated user.

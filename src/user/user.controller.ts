@@ -11,7 +11,9 @@ import {
     NotFoundException,
     Put,
     Delete,
-    Query
+    Query,
+    Req,
+    ConflictException
 }
     from '@nestjs/common';
 import { UserService } from './user.service';
@@ -21,6 +23,9 @@ import { UserCreateDto } from './models/user-create.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { isUUID } from 'class-validator'; // Import class-validator for UUID validation
 import { RoleService } from 'src/role/role.service';
+import { Request } from 'express';
+import { AuthService } from 'src/auth/auth.service';
+import { UserUpdateDto } from './models/user-update.dto';
 
 @UseInterceptors(ClassSerializerInterceptor) // hide the password
 @UseGuards(AuthGuard)
@@ -28,7 +33,8 @@ import { RoleService } from 'src/role/role.service';
 export class UserController {
     constructor(
         private userService: UserService,
-        private roleService: RoleService
+        private roleService: RoleService,
+        private authService: AuthService
     ) {
 
     }
@@ -75,6 +81,62 @@ export class UserController {
         return search;
     }
 
+    // User update their own info
+    @Put('info')
+    async updateInfo(
+        @Req() request: Request,
+        @Body() body: any,
+    ) {
+        const id = await this.authService.userId(request);
+        const existingUser = await this.userService.findOne({ id });
+
+        if (!existingUser) {
+            throw new NotFoundException('User not found');
+        }
+
+        if (body.email && body.email !== existingUser.email) {
+            const existingUserByEmail = await this.userService.findByEmail(body.email);
+            if (existingUserByEmail) {
+                throw new ConflictException('Email already exists');
+            }
+            existingUser.email = body.email;
+        }
+
+        if (body.username && body.username !== existingUser.username) {
+            const existingUserByUsername = await this.userService.findByUsername(body.username);
+            if (existingUserByUsername) {
+                throw new ConflictException('Username already exists');
+            }
+            existingUser.username = body.username;
+        }
+
+        await this.userService.update(id, existingUser);
+
+        return this.userService.findOne({ id });
+    }
+
+    // User update their own password
+    @Put('password')
+    async updatePassword(
+        @Req() request: Request,
+        @Body() body: any,
+    ) {
+        if (body.password !== body.confirm_password) {
+            throw new BadRequestException("Password do not match.");
+        }
+
+        const id = await this.authService.userId(request);
+
+        const hashPassword = await argon2.hash(body.password);
+
+        await this.userService.update(id, {
+            password: hashPassword
+        });
+
+        return this.userService.findOne({ id });
+    }
+
+    // Admin update the user info
     @Put(':id')
     async update(
         @Param('id') id: string,

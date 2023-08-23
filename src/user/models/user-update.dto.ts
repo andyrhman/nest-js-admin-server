@@ -2,12 +2,12 @@ import { IsNotEmpty, IsEmail } from "class-validator";
 
 export class UserUpdateDto {
     @IsNotEmpty({ message: 'Username is required' })
-    username: string;
+    username?: string;
 
     @IsNotEmpty({ message: 'Email is required' })
     @IsEmail({}, { message: 'Invalid email format' })
-    email: string;
+    email?: string;
 
     @IsNotEmpty({ message: 'Role is required' })
-    role_id: number;
+    role_id?: number;
 }
