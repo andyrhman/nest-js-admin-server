@@ -25,15 +25,16 @@ let OrderController = exports.OrderController = class OrderController {
     }
 };
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)('orders'),
     __param(0, (0, common_1.Query)('page')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "all", null);
 exports.OrderController = OrderController = __decorate([
+    (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    (0, common_1.Controller)('orders'),
+    (0, common_1.Controller)(),
     __metadata("design:paramtypes", [order_service_1.OrderService])
 ], OrderController);
 //# sourceMappingURL=order.controller.js.map

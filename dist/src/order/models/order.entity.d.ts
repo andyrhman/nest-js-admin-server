@@ -5,4 +5,5 @@ export declare class Order {
     email: string;
     created_at: string;
     order_items: OrderItem[];
+    get total(): number;
 }

@@ -25,6 +25,20 @@ let OrderService = exports.OrderService = class OrderService extends abstract_se
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
     }
+    async paginate(page = 1, relations = []) {
+        const { data, meta } = await super.paginate(page, relations);
+        return {
+            data: data.map((order) => ({
+                id: order.id,
+                name: order.name,
+                email: order.email,
+                total: order.total,
+                created_at: order.created_at,
+                order_items: order.order_items
+            })),
+            meta
+        };
+    }
     async seed() {
         const order = new order_entity_1.Order();
         order.name = 'John Doe';

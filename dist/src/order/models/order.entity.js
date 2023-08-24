@@ -12,7 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Order = void 0;
 const typeorm_1 = require("typeorm");
 const order_item_entity_1 = require("./order-item.entity");
+const class_transformer_1 = require("class-transformer");
 let Order = exports.Order = class Order {
+    get total() {
+        let total = 0;
+        for (const item of this.order_items) {
+            total += item.quantity * item.price;
+        }
+        return total;
+    }
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
@@ -34,6 +42,11 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => order_item_entity_1.OrderItem, orderItem => orderItem.order),
     __metadata("design:type", Array)
 ], Order.prototype, "order_items", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", Number),
+    __metadata("design:paramtypes", [])
+], Order.prototype, "total", null);
 exports.Order = Order = __decorate([
     (0, typeorm_1.Entity)('orders')
 ], Order);

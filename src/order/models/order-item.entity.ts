@@ -19,6 +19,6 @@ export class OrderItem {
     // That means Many order_items has One Order
     @ManyToOne(() => Order, order => order.order_items)
     @JoinColumn({ name: 'order_id' })
-    order: Order
+    order: Order;
 
 }
