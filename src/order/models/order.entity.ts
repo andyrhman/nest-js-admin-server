@@ -22,26 +22,10 @@ export class Order {
     @OneToMany(() => OrderItem, orderItem => orderItem.order)
     order_items: OrderItem[];
 
-      @Expose()
-  get total(): number {
-    let total = 0;
-    for (const item of this.order_items) {
-      total += item.quantity * item.price;
+    // Getting the total price
+    @Expose()
+    get total(): number {
+        return this.order_items.reduce((sum, i) => sum + i.quantity * i.price, 0);
     }
-    return total;
-  }
-
-    // Getting the total price with decimal
-    // @Expose()
-    // get total(): string {
-    //     let total = 0;
-    //     for (const item of this.order_items) {
-    //         total += item.quantity * item.price;
-    //     }
-    //     return total.toLocaleString(undefined, {
-    //         minimumFractionDigits: 2,
-    //         maximumFractionDigits: 2,
-    //     });
-    // }
 
 }

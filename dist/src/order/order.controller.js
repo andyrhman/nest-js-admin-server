@@ -16,12 +16,44 @@ exports.OrderController = void 0;
 const common_1 = require("@nestjs/common");
 const order_service_1 = require("./order.service");
 const auth_guard_1 = require("../auth/auth.guard");
+const json2csv_1 = require("json2csv");
 let OrderController = exports.OrderController = class OrderController {
     constructor(orderService) {
         this.orderService = orderService;
     }
     async all(page = 1) {
         return this.orderService.paginate(page, ['order_items']);
+    }
+    async export(res) {
+        const parser = new json2csv_1.Parser({
+            fields: ['ID', 'Name', 'Email', 'Product Title', 'Price', 'Quantity']
+        });
+        const orders = await this.orderService.all(['order_items']);
+        const json = [];
+        orders.forEach((o) => {
+            json.push({
+                ID: o.id,
+                Name: o.name,
+                Email: o.email,
+                'Product Title': '',
+                Price: '',
+                Quantity: ''
+            });
+            o.order_items.forEach((i) => {
+                json.push({
+                    ID: '',
+                    Name: '',
+                    Email: '',
+                    'Product Title': i.product_title,
+                    Price: i.price,
+                    Quantity: i.quantity
+                });
+            });
+        });
+        const csv = parser.parse(json);
+        res.header('Content-Type', 'text/csv');
+        res.attachment('orders.csv');
+        res.send(csv);
     }
 };
 __decorate([
@@ -31,6 +63,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "all", null);
+__decorate([
+    (0, common_1.Post)('export'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrderController.prototype, "export", null);
 exports.OrderController = OrderController = __decorate([
     (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),

@@ -15,11 +15,7 @@ const order_item_entity_1 = require("./order-item.entity");
 const class_transformer_1 = require("class-transformer");
 let Order = exports.Order = class Order {
     get total() {
-        let total = 0;
-        for (const item of this.order_items) {
-            total += item.quantity * item.price;
-        }
-        return total;
+        return this.order_items.reduce((sum, i) => sum + i.quantity * i.price, 0);
     }
 };
 __decorate([
