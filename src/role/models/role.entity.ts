@@ -10,12 +10,14 @@ export class Role {
   @Column()
   name: string;
 
+  // Role (Many) to Permissions (Many) relationship
+  // That means Many Roles has Many Permissions
   // Use cascade to delete the roles column
-  @ManyToMany(() => Permission, {cascade: true})
+  @ManyToMany(() => Permission, { cascade: true })
   @JoinTable({
     name: "role_permissions",
-    joinColumn: {name: "role_id", referencedColumnName: "id"},
-    inverseJoinColumn: {name: "permission_id", referencedColumnName: "id"}
+    joinColumn: { name: "role_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "permission_id", referencedColumnName: "id" }
   })
   permissions: Permission[];
 }

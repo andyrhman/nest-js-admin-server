@@ -27,6 +27,7 @@ export class User {
   }
 
   // Role (Many) to User (one) relationship
+  // That means One user has many roles
   @ManyToOne(() => Role)
   @JoinColumn({name: "role_id"})
   role: Role;
