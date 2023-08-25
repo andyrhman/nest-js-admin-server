@@ -64,4 +64,9 @@ export class OrderController {
         // here's the alternative
         // https://chat.openai.com/share/04b5c77d-ae0d-4e2f-9da7-51f5495c883d
     }
+
+    @Get('chart')
+    async orders(){
+        return this.orderService.chart();
+    }
 }

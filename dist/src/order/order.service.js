@@ -37,6 +37,18 @@ let OrderService = exports.OrderService = class OrderService extends abstract_se
             meta
         };
     }
+    async chart() {
+        const query = `
+            SELECT
+            TO_CHAR(o.created_at, 'YYYY-MM-DD') as data,
+            TO_CHAR(sum(i.price * i.quantity), 'FM999,999,999') as sum
+            FROM orders o
+            JOIN order_items i on o.id = i.order_id
+            GROUP BY TO_CHAR(o.created_at, 'YYYY-MM-DD');
+        `;
+        const result = await this.orderRepository.query(query);
+        return result;
+    }
 };
 exports.OrderService = OrderService = __decorate([
     (0, common_1.Injectable)(),

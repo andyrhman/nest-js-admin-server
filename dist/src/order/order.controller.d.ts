@@ -5,4 +5,5 @@ export declare class OrderController {
     constructor(orderService: OrderService);
     all(page?: number): Promise<import("../common/paginated-result.interface").PaginatedResult>;
     export(res: Response): Promise<void>;
+    orders(): Promise<any[]>;
 }

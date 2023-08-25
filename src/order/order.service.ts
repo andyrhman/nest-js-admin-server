@@ -16,7 +16,7 @@ export class OrderService extends AbstractService {
     }
 
     async paginate(page = 1, relations = []): Promise<PaginatedResult> {
-        const {data, meta} = await super.paginate(page, relations);
+        const { data, meta } = await super.paginate(page, relations);
 
         return {
             // Hiding the password, don't use if you already used Interceptor.
@@ -30,6 +30,21 @@ export class OrderService extends AbstractService {
             })),
             meta
         }
+    }
+
+    // The chart Service
+    async chart(): Promise<any[]> {
+        const query = `
+            SELECT
+            TO_CHAR(o.created_at, 'YYYY-MM-DD') as data,
+            TO_CHAR(sum(i.price * i.quantity), 'FM999,999,999') as sum
+            FROM orders o
+            JOIN order_items i on o.id = i.order_id
+            GROUP BY TO_CHAR(o.created_at, 'YYYY-MM-DD');
+        `;
+
+        const result = await this.orderRepository.query(query);
+        return result;
     }
     // async seed() {
     //     const order = new Order();
