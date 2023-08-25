@@ -5,6 +5,7 @@ import { Response } from 'express';
 import { Parser } from 'json2csv';
 import { Order } from './models/order.entity';
 import { OrderItem } from './models/order-item.entity';
+import { HasPermission } from 'src/permission/decorator/permission.decorator';
 
 @UseInterceptors(ClassSerializerInterceptor) // hide the password
 @UseGuards(AuthGuard)
@@ -16,6 +17,7 @@ export class OrderController {
 
     // Get all orders
     @Get('orders')
+    @HasPermission('orders')
     async all(@Query('page') page = 1) {
         // return this.orderService.all(['order_items'])
         return this.orderService.paginate(page, ['order_items']);
@@ -23,6 +25,7 @@ export class OrderController {
 
     // Export csv
     @Post('export')
+    @HasPermission('orders')
     async export(
         @Res() res: Response
     ){
@@ -66,6 +69,7 @@ export class OrderController {
     }
 
     @Get('chart')
+    @HasPermission('orders')
     async orders(){
         return this.orderService.chart();
     }

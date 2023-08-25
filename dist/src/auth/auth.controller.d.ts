@@ -9,7 +9,7 @@ export declare class AuthController {
     private authService;
     constructor(userService: UserService, jwtService: JwtService, authService: AuthService);
     register(body: RegisterDto, response: Response): Promise<any>;
-    login(email: string, password: string, response: Response): Promise<any>;
+    login(email: string, password: string, response: Response): Promise<string>;
     user(request: Request): Promise<any>;
     logout(response: Response): Promise<{
         message: string;

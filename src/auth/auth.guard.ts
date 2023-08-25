@@ -12,7 +12,7 @@ export class AuthGuard implements CanActivate {
     try {
       const jwt = request.cookies['jwt'];
 
-      return this.jwtService.verify(jwt);
+      return this.jwtService.verifyAsync(jwt);
 
     } catch (error) {
       return false;

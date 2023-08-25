@@ -1,8 +1,13 @@
 import { CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
+import { AuthService } from 'src/auth/auth.service';
+import { RoleService } from 'src/role/role.service';
+import { UserService } from 'src/user/user.service';
 export declare class PermissionGuard implements CanActivate {
     private reflector;
-    constructor(reflector: Reflector);
-    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean>;
+    private authService;
+    private userService;
+    private roleService;
+    constructor(reflector: Reflector, authService: AuthService, userService: UserService, roleService: RoleService);
+    canActivate(context: ExecutionContext): Promise<boolean>;
 }

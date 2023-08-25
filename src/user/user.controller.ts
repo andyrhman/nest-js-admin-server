@@ -25,7 +25,7 @@ import { isUUID } from 'class-validator'; // Import class-validator for UUID val
 import { RoleService } from 'src/role/role.service';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
-import { UserUpdateDto } from './models/user-update.dto';
+import { HasPermission } from 'src/permission/decorator/permission.decorator';
 
 @UseInterceptors(ClassSerializerInterceptor) // hide the password
 @UseGuards(AuthGuard)
@@ -40,11 +40,13 @@ export class UserController {
     }
 
     @Get()
+    @HasPermission('users')
     async all(@Query('page') page: number = 1) {
         return await this.userService.paginate(page, ['role']);
     }
 
     @Post()
+    @HasPermission('users')
     async create(@Body() body: UserCreateDto): Promise<User> {
         const password = await argon2.hash('123456');
 
@@ -67,6 +69,7 @@ export class UserController {
     }
 
     @Get(':id')
+    @HasPermission('users')
     async get(@Param('id') id: string) {
         if (!isUUID(id)) {
             throw new BadRequestException('Invalid UUID format');
@@ -138,6 +141,7 @@ export class UserController {
 
     // Admin update the user info
     @Put(':id')
+    @HasPermission('users')
     async update(
         @Param('id') id: string,
         @Body() body: any,
@@ -188,6 +192,7 @@ export class UserController {
     }
 
     @Delete(':id')
+    @HasPermission('users')
     async delete(
         @Param('id') id: string,
     ) {

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionController = void 0;
 const common_1 = require("@nestjs/common");
 const permission_service_1 = require("./permission.service");
-const permission_decorator_1 = require("./decorator/permission.decorator");
+const auth_guard_1 = require("../auth/auth.guard");
 let PermissionController = exports.PermissionController = class PermissionController {
     constructor(permissinService) {
         this.permissinService = permissinService;
@@ -23,12 +23,12 @@ let PermissionController = exports.PermissionController = class PermissionContro
 };
 __decorate([
     (0, common_1.Get)(),
-    (0, permission_decorator_1.HasPermission)('view_permissions'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PermissionController.prototype, "all", null);
 exports.PermissionController = PermissionController = __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)('permissions'),
     __metadata("design:paramtypes", [permission_service_1.PermissionService])
 ], PermissionController);

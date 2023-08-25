@@ -81,7 +81,7 @@ export class AuthController {
         response.cookie('jwt', jwt, { httpOnly: true });
         response.status(200);
 
-        return user;
+        return jwt;
     }
 
     // Getting the authenticated user.

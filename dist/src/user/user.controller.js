@@ -21,6 +21,7 @@ const auth_guard_1 = require("../auth/auth.guard");
 const class_validator_1 = require("class-validator");
 const role_service_1 = require("../role/role.service");
 const auth_service_1 = require("../auth/auth.service");
+const permission_decorator_1 = require("../permission/decorator/permission.decorator");
 let UserController = exports.UserController = class UserController {
     constructor(userService, roleService, authService) {
         this.userService = userService;
@@ -129,6 +130,7 @@ let UserController = exports.UserController = class UserController {
 };
 __decorate([
     (0, common_1.Get)(),
+    (0, permission_decorator_1.HasPermission)('users'),
     __param(0, (0, common_1.Query)('page')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -136,6 +138,7 @@ __decorate([
 ], UserController.prototype, "all", null);
 __decorate([
     (0, common_1.Post)(),
+    (0, permission_decorator_1.HasPermission)('users'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_create_dto_1.UserCreateDto]),
@@ -143,6 +146,7 @@ __decorate([
 ], UserController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, permission_decorator_1.HasPermission)('users'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -166,6 +170,7 @@ __decorate([
 ], UserController.prototype, "updatePassword", null);
 __decorate([
     (0, common_1.Put)(':id'),
+    (0, permission_decorator_1.HasPermission)('users'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -174,6 +179,7 @@ __decorate([
 ], UserController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, permission_decorator_1.HasPermission)('users'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

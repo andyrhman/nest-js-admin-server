@@ -12,18 +12,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionGuard = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
+const auth_service_1 = require("../auth/auth.service");
+const role_service_1 = require("../role/role.service");
+const user_service_1 = require("../user/user.service");
 let PermissionGuard = exports.PermissionGuard = class PermissionGuard {
-    constructor(reflector) {
+    constructor(reflector, authService, userService, roleService) {
         this.reflector = reflector;
+        this.authService = authService;
+        this.userService = userService;
+        this.roleService = roleService;
     }
-    canActivate(context) {
+    async canActivate(context) {
         const access = this.reflector.get('access', context.getHandler());
-        console.log(access);
-        return true;
+        if (!access) {
+            return true;
+        }
+        const request = context.switchToHttp().getRequest();
+        const id = await this.authService.userId(request);
+        const user = await this.userService.findOne({ id }, ['role']);
+        const role = await this.roleService.findOne({ id: user.role.id }, ['permissions']);
+        if (request.method === 'GET') {
+            return role.permissions.some(p => (p.name === `view_${access}`) || (p.name === `edit_${access}`));
+        }
+        return role.permissions.some(p => p.name === `edit_${access}`);
     }
 };
 exports.PermissionGuard = PermissionGuard = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [core_1.Reflector])
+    __metadata("design:paramtypes", [core_1.Reflector,
+        auth_service_1.AuthService,
+        user_service_1.UserService,
+        role_service_1.RoleService])
 ], PermissionGuard);
 //# sourceMappingURL=permission.guard.js.map

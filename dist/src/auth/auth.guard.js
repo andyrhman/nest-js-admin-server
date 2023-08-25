@@ -20,7 +20,7 @@ let AuthGuard = exports.AuthGuard = class AuthGuard {
         const request = context.switchToHttp().getRequest();
         try {
             const jwt = request.cookies['jwt'];
-            return this.jwtService.verify(jwt);
+            return this.jwtService.verifyAsync(jwt);
         }
         catch (error) {
             return false;

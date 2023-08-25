@@ -18,8 +18,16 @@ let AuthService = exports.AuthService = class AuthService {
     }
     async userId(request) {
         const cookie = request.cookies['jwt'];
-        const data = await this.jwtService.verifyAsync(cookie);
-        return data['id'];
+        if (!cookie) {
+            throw new common_1.UnauthorizedException('User not authenticated');
+        }
+        try {
+            const data = await this.jwtService.verifyAsync(cookie);
+            return data['id'];
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException('User not authenticated');
+        }
     }
 };
 exports.AuthService = AuthService = __decorate([
