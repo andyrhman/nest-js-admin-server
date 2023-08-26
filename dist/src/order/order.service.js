@@ -17,11 +17,13 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const abstract_service_1 = require("../common/abstract.service");
 const order_entity_1 = require("./models/order.entity");
+const order_item_entity_1 = require("./models/order-item.entity");
 const typeorm_2 = require("typeorm");
 let OrderService = exports.OrderService = class OrderService extends abstract_service_1.AbstractService {
-    constructor(orderRepository) {
+    constructor(orderRepository, orderItemRepository) {
         super(orderRepository);
         this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
     }
     async paginate(page = 1, relations = []) {
         const { data, meta } = await super.paginate(page, relations);
@@ -49,10 +51,26 @@ let OrderService = exports.OrderService = class OrderService extends abstract_se
         const result = await this.orderRepository.query(query);
         return result;
     }
+    async createOrderItem(data) {
+        const order = new order_entity_1.Order();
+        order.name = data.name;
+        order.email = data.email;
+        await this.orderRepository.save(order);
+        for (const productData of data.products) {
+            const orderItem = new order_item_entity_1.OrderItem();
+            orderItem.product_title = productData.product_title;
+            orderItem.price = productData.price;
+            orderItem.quantity = productData.quantity;
+            orderItem.order = order;
+            await this.orderItemRepository.save(orderItem);
+        }
+    }
 };
 exports.OrderService = OrderService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(order_entity_1.Order)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(order_item_entity_1.OrderItem)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], OrderService);
 //# sourceMappingURL=order.service.js.map

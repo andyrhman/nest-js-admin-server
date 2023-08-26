@@ -23,7 +23,8 @@ exports.OrderModule = OrderModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([order_entity_1.Order, order_item_entity_1.OrderItem])
         ],
         controllers: [order_controller_1.OrderController],
-        providers: [order_service_1.OrderService]
+        providers: [order_service_1.OrderService],
+        exports: [order_service_1.OrderService]
     })
 ], OrderModule);
 //# sourceMappingURL=order.module.js.map

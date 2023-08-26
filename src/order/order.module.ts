@@ -12,7 +12,8 @@ import { OrderItem } from './models/order-item.entity';
     TypeOrmModule.forFeature([Order, OrderItem])
   ],
   controllers: [OrderController],
-  providers: [OrderService]
+  providers: [OrderService],
+  exports: [OrderService]
 })
 export class OrderModule {}
 // export class OrderModule implements OnModuleInit {

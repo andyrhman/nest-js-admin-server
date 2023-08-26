@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AbstractService } from 'src/common/abstract.service';
 import { Order } from './models/order.entity';
-import { Repository } from 'typeorm';
 import { OrderItem } from './models/order-item.entity';
+import { Repository } from 'typeorm';
 import { PaginatedResult } from 'src/common/paginated-result.interface';
 
 @Injectable()
 export class OrderService extends AbstractService {
     constructor(
-        @InjectRepository(Order) private readonly orderRepository: Repository<Order>
-        // @InjectRepository(OrderItem) private readonly orderItemRepository: Repository<OrderItem>,
+        @InjectRepository(Order) private readonly orderRepository: Repository<Order>,
+        @InjectRepository(OrderItem) private readonly orderItemRepository: Repository<OrderItem>,
     ) {
         super(orderRepository);
     }
@@ -46,6 +46,28 @@ export class OrderService extends AbstractService {
         const result = await this.orderRepository.query(query);
         return result;
     }
+
+    // https://www.phind.com/search?cache=wdvxsmhkrcrqiw58fftdzj28
+    async createOrderItem(data): Promise<any> {
+        const order = new Order();
+        order.name = data.name;
+        order.email = data.email;
+        await this.orderRepository.save(order);
+
+        for (const productData of data.products) {
+            const orderItem = new OrderItem();
+            orderItem.product_title = productData.product_title;
+            orderItem.price = productData.price;
+            orderItem.quantity = productData.quantity;
+            orderItem.order = order;
+            await this.orderItemRepository.save(orderItem);
+        }
+    }
+
+
+    // async createOrderItem(data): Promise<OrderItem> {
+    //     return this.orderItemRepository.save(data);
+    // }
     // async seed() {
     //     const order = new Order();
     //     order.name = 'John Doe';

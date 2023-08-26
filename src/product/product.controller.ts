@@ -1,41 +1,97 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ProductCreateDto } from './models/product-create.dto';
 import { ProductUpdateDto } from './models/product-update.dto';
+import { AuthService } from 'src/auth/auth.service';
+import { UserService } from 'src/user/user.service';
+import { Request } from 'express';
+import { OrderService } from 'src/order/order.service';
+import { OrderItem } from 'src/order/models/order-item.entity';
 
 @UseGuards(AuthGuard)
 @Controller('products')
 export class ProductController {
-    constructor(private productService: ProductService) {}
+    constructor(
+        private productService: ProductService,
+        private orderService: OrderService,
+        private userService: UserService,
+        private authService: AuthService
+    ) { }
 
+    // Get all prodcuts
     @Get()
-    async all(@Query('page') page = 1){
+    async all(@Query('page') page = 1) {
         return this.productService.paginate(page);
     }
-    
+
+    // Order Products
+    // https://www.phind.com/search?cache=wdvxsmhkrcrqiw58fftdzj28
+    @Post('order-products')
+    async orderProducts(
+        @Req() request: Request,
+        @Body() orderData: { products: { id: string; quantity: number }[] }
+
+    ) {
+        const authUserId = await this.authService.userId(request);
+        const user = await this.userService.findOne({ id: authUserId });
+
+        // Create an array to store product data for each product
+        const products = [];
+
+        for (const productData of orderData.products) {
+            const product = await this.productService.findOne({ id: productData.id });
+            if (!product) {
+                throw new NotFoundException(`Product with ID ${productData.id} not found`);
+            }
+
+            // Add product data to products array
+            products.push({
+                product_title: product.title,
+                price: product.price,
+                quantity: productData.quantity
+            });
+        }
+
+        // Call createOrderItem with products array
+        await this.orderService.createOrderItem({
+            name: user.username,
+            email: user.email,
+            products
+        });
+
+        return {
+            message: "Your order has been created!"
+        };
+    }
+
+
+    // Create Products
     @Post()
-    async create(@Body() body: ProductCreateDto){
+    async create(@Body() body: ProductCreateDto) {
         return this.productService.create(body);
     }
 
+    // Get one products
     @Get(':id')
-    async get(@Param('id') id: string){
-        return this.productService.findOne({id});
+    async get(@Param('id') id: string) {
+        return this.productService.findOne({ id });
     }
 
+    // Update Products
     @Put(':id')
     async update(
         @Param('id') id: string,
-        @Body() body: ProductUpdateDto 
-    ){
+        @Body() body: ProductUpdateDto
+    ) {
         await this.productService.update(id, body);
 
-        return this.productService.findOne({id});
+        return this.productService.findOne({ id });
     }
 
+    // Delete Products
     @Delete(':id')
-    async delete(@Param('id') id: string){
+    async delete(@Param('id') id: string) {
         return this.productService.delete(id);
     }
 }

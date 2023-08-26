@@ -18,12 +18,42 @@ const product_service_1 = require("./product.service");
 const auth_guard_1 = require("../auth/auth.guard");
 const product_create_dto_1 = require("./models/product-create.dto");
 const product_update_dto_1 = require("./models/product-update.dto");
+const auth_service_1 = require("../auth/auth.service");
+const user_service_1 = require("../user/user.service");
+const order_service_1 = require("../order/order.service");
 let ProductController = exports.ProductController = class ProductController {
-    constructor(productService) {
+    constructor(productService, orderService, userService, authService) {
         this.productService = productService;
+        this.orderService = orderService;
+        this.userService = userService;
+        this.authService = authService;
     }
     async all(page = 1) {
         return this.productService.paginate(page);
+    }
+    async orderProducts(request, orderData) {
+        const authUserId = await this.authService.userId(request);
+        const user = await this.userService.findOne({ id: authUserId });
+        const products = [];
+        for (const productData of orderData.products) {
+            const product = await this.productService.findOne({ id: productData.id });
+            if (!product) {
+                throw new common_1.NotFoundException(`Product with ID ${productData.id} not found`);
+            }
+            products.push({
+                product_title: product.title,
+                price: product.price,
+                quantity: productData.quantity
+            });
+        }
+        await this.orderService.createOrderItem({
+            name: user.username,
+            email: user.email,
+            products
+        });
+        return {
+            message: "Your order has been created!"
+        };
     }
     async create(body) {
         return this.productService.create(body);
@@ -46,6 +76,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "all", null);
+__decorate([
+    (0, common_1.Post)('order-products'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProductController.prototype, "orderProducts", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -78,6 +116,9 @@ __decorate([
 exports.ProductController = ProductController = __decorate([
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)('products'),
-    __metadata("design:paramtypes", [product_service_1.ProductService])
+    __metadata("design:paramtypes", [product_service_1.ProductService,
+        order_service_1.OrderService,
+        user_service_1.UserService,
+        auth_service_1.AuthService])
 ], ProductController);
 //# sourceMappingURL=product.controller.js.map

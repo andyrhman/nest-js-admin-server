@@ -54,7 +54,7 @@ let AuthController = exports.AuthController = class AuthController {
         const jwt = await this.jwtService.signAsync({ id: user.id });
         response.cookie('jwt', jwt, { httpOnly: true });
         response.status(200);
-        return jwt;
+        return user;
     }
     async user(request) {
         const id = await this.authService.userId(request);

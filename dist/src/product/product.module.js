@@ -13,12 +13,18 @@ const product_controller_1 = require("./product.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const product_entity_1 = require("./models/product.entity");
 const upload_controller_1 = require("./upload.controller");
+const auth_module_1 = require("../auth/auth.module");
+const user_module_1 = require("../user/user.module");
+const order_module_1 = require("../order/order.module");
 let ProductModule = exports.ProductModule = class ProductModule {
 };
 exports.ProductModule = ProductModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([product_entity_1.Product])
+            typeorm_1.TypeOrmModule.forFeature([product_entity_1.Product]),
+            auth_module_1.AuthModule,
+            user_module_1.UserModule,
+            order_module_1.OrderModule
         ],
         providers: [product_service_1.ProductService],
         controllers: [product_controller_1.ProductController, upload_controller_1.UploadController]

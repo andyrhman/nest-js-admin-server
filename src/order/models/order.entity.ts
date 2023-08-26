@@ -1,6 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { OrderItem } from "./order-item.entity";
-import { ClassSerializerInterceptor, UseInterceptors } from "@nestjs/common";
 import { Expose } from "class-transformer";
 
 @Entity('orders')
