@@ -3,5 +3,5 @@ import { JwtService } from '@nestjs/jwt';
 export declare class AuthGuard implements CanActivate {
     private jwtService;
     constructor(jwtService: JwtService);
-    canActivate(context: ExecutionContext): false | Promise<any>;
+    canActivate(context: ExecutionContext): any;
 }

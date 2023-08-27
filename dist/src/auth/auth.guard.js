@@ -18,12 +18,15 @@ let AuthGuard = exports.AuthGuard = class AuthGuard {
     }
     canActivate(context) {
         const request = context.switchToHttp().getRequest();
+        const jwt = request.cookies['jwt'];
+        if (!jwt) {
+            throw new common_1.UnauthorizedException('User not authenticated');
+        }
         try {
-            const jwt = request.cookies['jwt'];
-            return this.jwtService.verifyAsync(jwt);
+            return this.jwtService.verify(jwt);
         }
         catch (error) {
-            return false;
+            throw new common_1.UnauthorizedException('User not authenticated');
         }
     }
 };
