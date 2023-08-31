@@ -24,13 +24,12 @@ let AddressController = exports.AddressController = class AddressController {
         this.userService = userService;
         this.authService = authService;
     }
-    async create(id, request, body) {
+    async all() {
+        return this.addressService.all(['user']);
+    }
+    async create(request, body) {
         const authUser = await this.authService.userId(request);
-        const existingAddress = await this.addressService.findOne({ user: id });
-        if (existingAddress) {
-            throw new common_1.BadRequestException("Address already exists");
-        }
-        return this.addressService.createAddress({
+        const address = await this.addressService.createAddress({
             street: body.street,
             city: body.city,
             province: body.province,
@@ -39,17 +38,46 @@ let AddressController = exports.AddressController = class AddressController {
             phone: body.phone,
             user: authUser
         });
+        return address;
+    }
+    async update(id, body) {
+        const address = await this.addressService.findOne({ id });
+        if (!address) {
+            throw new common_1.NotFoundException("Address is not exists");
+        }
+        await this.addressService.update(id, {
+            street: body.street,
+            city: body.city,
+            province: body.province,
+            zip: body.zip,
+            country: body.country,
+            phone: body.phone,
+        });
+        return this.addressService.findOne({ id });
     }
 };
 __decorate([
-    (0, common_1.Post)(':id'),
-    __param(0, (0, common_1.Param)()),
-    __param(1, (0, common_1.Req)()),
-    __param(2, (0, common_1.Body)()),
+    (0, common_1.Get)(),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AddressController.prototype, "all", null);
+__decorate([
+    (0, common_1.Post)(':id'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AddressController.prototype, "create", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], AddressController.prototype, "update", null);
 exports.AddressController = AddressController = __decorate([
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)('address'),
