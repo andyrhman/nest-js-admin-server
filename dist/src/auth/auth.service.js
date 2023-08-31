@@ -17,7 +17,7 @@ let AuthService = exports.AuthService = class AuthService {
         this.jwtService = jwtService;
     }
     async userId(request) {
-        const cookie = request.cookies['jwt'];
+        const cookie = request.cookies['user_session'];
         if (!cookie) {
             throw new common_1.UnauthorizedException('User not authenticated');
         }

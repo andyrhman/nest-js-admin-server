@@ -12,37 +12,32 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserService = void 0;
+exports.AddressService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const user_entity_1 = require("./models/user.entity");
-const typeorm_2 = require("typeorm");
 const abstract_service_1 = require("../common/abstract.service");
-let UserService = exports.UserService = class UserService extends abstract_service_1.AbstractService {
-    constructor(userRepository) {
-        super(userRepository);
-        this.userRepository = userRepository;
+const typeorm_2 = require("typeorm");
+const address_entity_1 = require("./models/address.entity");
+let AddressService = exports.AddressService = class AddressService extends abstract_service_1.AbstractService {
+    constructor(addressRepository) {
+        super(addressRepository);
+        this.addressRepository = addressRepository;
     }
-    async paginate(page = 1, relations = []) {
-        const { data, meta } = await super.paginate(page, relations);
-        return {
-            data: data.map(user => {
-                const { password, ...data } = user;
-                return data;
-            }),
-            meta
-        };
-    }
-    async findUsersByUsernameOrEmail(search) {
-        return this.userRepository
-            .createQueryBuilder('user')
-            .where('user.username ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` })
-            .getMany();
+    async createAddress(data) {
+        const address = new address_entity_1.Address();
+        address.street = data.street;
+        address.city = data.city;
+        address.province = data.province;
+        address.zip = data.zip;
+        address.country = data.country;
+        address.phone = data.phone;
+        address.user = data.user;
+        await this.addressRepository.save(address);
     }
 };
-exports.UserService = UserService = __decorate([
+exports.AddressService = AddressService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(0, (0, typeorm_1.InjectRepository)(address_entity_1.Address)),
     __metadata("design:paramtypes", [typeorm_2.Repository])
-], UserService);
-//# sourceMappingURL=user.service.js.map
+], AddressService);
+//# sourceMappingURL=address.service.js.map

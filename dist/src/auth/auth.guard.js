@@ -18,7 +18,7 @@ let AuthGuard = exports.AuthGuard = class AuthGuard {
     }
     canActivate(context) {
         const request = context.switchToHttp().getRequest();
-        const jwt = request.cookies['jwt'];
+        const jwt = request.cookies['user_session'];
         if (!jwt) {
             throw new common_1.UnauthorizedException('User not authenticated');
         }

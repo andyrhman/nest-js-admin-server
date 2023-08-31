@@ -43,25 +43,37 @@ let AuthController = exports.AuthController = class AuthController {
             role: { id: "3" }
         });
     }
-    async login(email, password, response) {
-        const user = await this.userService.findOne({ email });
+    async login(username, email, password, response, rememberMe) {
+        let user;
+        if (email) {
+            user = await this.userService.findByEmail(email);
+        }
+        else {
+            user = await this.userService.findByUsername(username);
+        }
         if (!user) {
-            throw new common_1.NotFoundException("Email or Password is invalid");
+            throw new common_1.BadRequestException('Username or Email is Invalid');
         }
         if (!await argon2.verify(user.password, password)) {
-            throw new common_1.BadRequestException("Email or Password is invalid");
+            throw new common_1.BadRequestException("Password is invalid");
         }
+        const refreshTokenExpiration = rememberMe
+            ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+            : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
         const jwt = await this.jwtService.signAsync({ id: user.id });
-        response.cookie('jwt', jwt, { httpOnly: true });
+        response.cookie('user_session', jwt, {
+            httpOnly: true,
+            expires: refreshTokenExpiration,
+        });
         response.status(200);
-        return user;
+        return jwt;
     }
     async user(request) {
         const id = await this.authService.userId(request);
         return this.userService.findOne({ id });
     }
     async logout(response) {
-        response.clearCookie('jwt');
+        response.clearCookie('user_session');
         return {
             message: "success"
         };
@@ -77,11 +89,13 @@ __decorate([
 ], AuthController.prototype, "register", null);
 __decorate([
     (0, common_1.Post)('login'),
-    __param(0, (0, common_1.Body)('email')),
-    __param(1, (0, common_1.Body)('password')),
-    __param(2, (0, common_1.Res)({ passthrough: true })),
+    __param(0, (0, common_1.Body)('username')),
+    __param(1, (0, common_1.Body)('email')),
+    __param(2, (0, common_1.Body)('password')),
+    __param(3, (0, common_1.Res)({ passthrough: true })),
+    __param(4, (0, common_1.Body)('rememberMe')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:paramtypes", [String, String, String, Object, Boolean]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([

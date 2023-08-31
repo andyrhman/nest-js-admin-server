@@ -9,7 +9,7 @@ export class AuthService {
     ) { }
 
     async userId(request: Request): Promise<string> {
-        const cookie = request.cookies['jwt'];
+        const cookie = request.cookies['user_session'];
 
         if (!cookie) {
             throw new UnauthorizedException('User not authenticated');

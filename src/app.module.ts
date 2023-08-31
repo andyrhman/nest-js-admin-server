@@ -11,6 +11,7 @@ import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { APP_GUARD } from '@nestjs/core';
 import { PermissionGuard } from './permission/permission.guard';
+import { AddressModule } from './address/address.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { PermissionGuard } from './permission/permission.guard';
     PermissionModule,
     ProductModule,
     OrderModule,
+    AddressModule,
   ],
   providers: [
     {

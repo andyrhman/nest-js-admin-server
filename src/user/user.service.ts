@@ -11,10 +11,10 @@ export class UserService extends AbstractService {
         @InjectRepository(User) private readonly userRepository: Repository<User>
     ) {
         super(userRepository);
-     }
+    }
 
     async paginate(page = 1, relations = []): Promise<PaginatedResult> {
-        const {data, meta} = await super.paginate(page, relations);
+        const { data, meta } = await super.paginate(page, relations);
 
         return {
             // Hiding the password, don't use if you already used Interceptor.
@@ -25,6 +25,13 @@ export class UserService extends AbstractService {
             }),
             meta
         }
+    }
+
+    async findUsersByUsernameOrEmail(search: string): Promise<User[]> { // Change the return type to User[]
+        return this.userRepository
+            .createQueryBuilder('user')
+            .where('user.username ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` })
+            .getMany();
     }
 
 }

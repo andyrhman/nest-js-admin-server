@@ -6,4 +6,5 @@ export declare class UserService extends AbstractService {
     private readonly userRepository;
     constructor(userRepository: Repository<User>);
     paginate(page?: number, relations?: any[]): Promise<PaginatedResult>;
+    findUsersByUsernameOrEmail(search: string): Promise<User[]>;
 }

@@ -20,6 +20,7 @@ const product_module_1 = require("./product/product.module");
 const order_module_1 = require("./order/order.module");
 const core_1 = require("@nestjs/core");
 const permission_guard_1 = require("./permission/permission.guard");
+const address_module_1 = require("./address/address.module");
 let AppModule = exports.AppModule = class AppModule {
 };
 exports.AppModule = AppModule = __decorate([
@@ -44,6 +45,7 @@ exports.AppModule = AppModule = __decorate([
             permission_module_1.PermissionModule,
             product_module_1.ProductModule,
             order_module_1.OrderModule,
+            address_module_1.AddressModule,
         ],
         providers: [
             {

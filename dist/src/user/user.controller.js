@@ -28,6 +28,16 @@ let UserController = exports.UserController = class UserController {
         this.roleService = roleService;
         this.authService = authService;
     }
+    async findUsers(search) {
+        if (/[<>]/.test(search)) {
+            throw new common_1.BadRequestException("Invalid user input");
+        }
+        const users = await this.userService.findUsersByUsernameOrEmail(search);
+        if (users.length === 0) {
+            throw new common_1.NotFoundException(`Can't find any results for your search: ${search}`);
+        }
+        return users;
+    }
     async all(page = 1) {
         return await this.userService.paginate(page, ['role']);
     }
@@ -129,7 +139,15 @@ let UserController = exports.UserController = class UserController {
     }
 };
 __decorate([
+    (0, common_1.Get)('user'),
+    __param(0, (0, common_1.Query)('search')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "findUsers", null);
+__decorate([
     (0, common_1.Get)(),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, permission_decorator_1.HasPermission)('users'),
     __param(0, (0, common_1.Query)('page')),
     __metadata("design:type", Function),
@@ -138,6 +156,7 @@ __decorate([
 ], UserController.prototype, "all", null);
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, permission_decorator_1.HasPermission)('users'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -146,6 +165,7 @@ __decorate([
 ], UserController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, permission_decorator_1.HasPermission)('users'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -154,6 +174,7 @@ __decorate([
 ], UserController.prototype, "get", null);
 __decorate([
     (0, common_1.Put)('info'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -162,6 +183,7 @@ __decorate([
 ], UserController.prototype, "updateInfo", null);
 __decorate([
     (0, common_1.Put)('password'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -170,6 +192,7 @@ __decorate([
 ], UserController.prototype, "updatePassword", null);
 __decorate([
     (0, common_1.Put)(':id'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, permission_decorator_1.HasPermission)('users'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -179,6 +202,7 @@ __decorate([
 ], UserController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, permission_decorator_1.HasPermission)('users'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -187,7 +211,6 @@ __decorate([
 ], UserController.prototype, "delete", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [user_service_1.UserService,
         role_service_1.RoleService,

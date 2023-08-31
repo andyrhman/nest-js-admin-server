@@ -28,24 +28,39 @@ import { AuthService } from 'src/auth/auth.service';
 import { HasPermission } from 'src/permission/decorator/permission.decorator';
 
 @UseInterceptors(ClassSerializerInterceptor) // hide the password
-@UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
     constructor(
         private userService: UserService,
         private roleService: RoleService,
         private authService: AuthService
-    ) {
+    ) { }
 
+    @Get('user')
+    async findUsers(@Query('search') search: string): Promise<User[]> {
+        // Check for malicious characters in the search input
+        if (/[<>]/.test(search)) {
+            throw new BadRequestException("Invalid user input");
+        }
+
+        const users = await this.userService.findUsersByUsernameOrEmail(search);
+
+        if (users.length === 0) {
+            throw new NotFoundException(`Can't find any results for your search: ${search}`);
+        }
+
+        return users;
     }
 
     @Get()
+    @UseGuards(AuthGuard)
     @HasPermission('users')
     async all(@Query('page') page: number = 1) {
         return await this.userService.paginate(page, ['role']);
     }
 
     @Post()
+    @UseGuards(AuthGuard)
     @HasPermission('users')
     async create(@Body() body: UserCreateDto): Promise<User> {
         const password = await argon2.hash('123456');
@@ -69,6 +84,7 @@ export class UserController {
     }
 
     @Get(':id')
+    @UseGuards(AuthGuard)
     @HasPermission('users')
     async get(@Param('id') id: string) {
         if (!isUUID(id)) {
@@ -86,6 +102,7 @@ export class UserController {
 
     // User update their own info
     @Put('info')
+    @UseGuards(AuthGuard)
     async updateInfo(
         @Req() request: Request,
         @Body() body: any,
@@ -120,6 +137,7 @@ export class UserController {
 
     // User update their own password
     @Put('password')
+    @UseGuards(AuthGuard)
     async updatePassword(
         @Req() request: Request,
         @Body() body: any,
@@ -141,6 +159,7 @@ export class UserController {
 
     // Admin update the user info
     @Put(':id')
+    @UseGuards(AuthGuard)
     @HasPermission('users')
     async update(
         @Param('id') id: string,
@@ -192,6 +211,7 @@ export class UserController {
     }
 
     @Delete(':id')
+    @UseGuards(AuthGuard)
     @HasPermission('users')
     async delete(
         @Param('id') id: string,
