@@ -30,7 +30,7 @@ let AddressController = exports.AddressController = class AddressController {
     }
     async create(request, body) {
         const authUser = await this.authService.userId(request);
-        const address = await this.addressService.createAddress({
+        await this.addressService.create({
             street: body.street,
             city: body.city,
             province: body.province,
@@ -39,7 +39,9 @@ let AddressController = exports.AddressController = class AddressController {
             phone: body.phone,
             user: authUser
         });
-        return address;
+        return {
+            message: "Address created successfully"
+        };
     }
     async update(id, body) {
         if (!(0, class_validator_1.isUUID)(id)) {
@@ -76,7 +78,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AddressController.prototype, "all", null);
 __decorate([
-    (0, common_1.Post)(':id'),
+    (0, common_1.Post)(),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

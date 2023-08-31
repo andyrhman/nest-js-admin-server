@@ -20,14 +20,14 @@ export class AddressController {
         return this.addressService.all(['user']);
     }
 
-    @Post(':id')
+    @Post()
     async create(
         @Req() request: Request,
         @Body() body: any
     ) {
         const authUser = await this.authService.userId(request);
 
-        const address = await this.addressService.createAddress({
+        await this.addressService.create({
             street: body.street,
             city: body.city,
             province: body.province,
@@ -37,7 +37,9 @@ export class AddressController {
             user: authUser // Pass the fetched user instance to createAddress
         });
 
-        return address;
+        return{
+            message: "Address created successfully"
+        };
     }
 
     @Put(':id')
