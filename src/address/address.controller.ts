@@ -23,7 +23,12 @@ export class AddressController {
         @Body() body: any
     ){
         const authUser = await this.authService.userId(request);
-        
+        const existingAddress = await this.addressService.findOne({user: id});
+
+        if (existingAddress) {
+            throw new BadRequestException("Address already exists");
+        }
+
         return this.addressService.createAddress({
             street: body.street,
             city: body.city,
