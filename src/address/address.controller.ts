@@ -1,9 +1,10 @@
-import { Body, Controller, NotFoundException, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, NotFoundException, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { AddressService } from './address.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from 'src/auth/auth.service';
 import { Request } from 'express';
+import { isUUID } from 'class-validator'; // Import class-validator for UUID validation
 
 @UseGuards(AuthGuard)
 @Controller('address')
@@ -17,16 +18,12 @@ export class AddressController {
 
     @Post(':id')
     async create(
+        @Param() id: string,
         @Req() request: Request,
         @Body() body: any
     ){
         const authUser = await this.authService.userId(request);
-        const user = await this.userService.findOne({id: authUser})
-
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-
+        
         return this.addressService.createAddress({
             street: body.street,
             city: body.city,
@@ -34,7 +31,7 @@ export class AddressController {
             zip: body.zip,
             country: body.country,
             phone: body.phone,
-            user: user // Pass the fetched user instance to createAddress
+            user: authUser // Pass the fetched user instance to createAddress
         });
     }
 }

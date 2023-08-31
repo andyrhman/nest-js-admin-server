@@ -157,7 +157,7 @@ export class UserController {
         return this.userService.findOne({ id });
     }
 
-    // Admin update the user info
+    // * Admin update the user info
     @Put(':id')
     @UseGuards(AuthGuard)
     @HasPermission('users')

@@ -1,3 +1,4 @@
+import { Address } from 'src/address/models/address.entity';
 import { Role } from 'src/role/models/role.entity';
 export declare class User {
     id: string;
@@ -6,4 +7,5 @@ export declare class User {
     password: string;
     addId(): void;
     role: Role;
+    address: Address[];
 }

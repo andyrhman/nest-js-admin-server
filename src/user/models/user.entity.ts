@@ -1,7 +1,8 @@
 // user.entity.ts
 import { Exclude } from 'class-transformer';
+import { Address } from 'src/address/models/address.entity';
 import { Role } from 'src/role/models/role.entity';
-import { Column, Entity, PrimaryGeneratedColumn, BeforeInsert, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, BeforeInsert, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
 @Entity('users')
@@ -31,4 +32,7 @@ export class User {
   @ManyToOne(() => Role)
   @JoinColumn({name: "role_id"})
   role: Role;
+
+  @OneToMany(() => Address, (address) => address.user)
+  address: Address[]
 }

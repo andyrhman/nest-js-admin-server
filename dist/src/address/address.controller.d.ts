@@ -7,5 +7,5 @@ export declare class AddressController {
     private userService;
     private authService;
     constructor(addressService: AddressService, userService: UserService, authService: AuthService);
-    create(request: Request, body: any): Promise<any>;
+    create(id: string, request: Request, body: any): Promise<any>;
 }

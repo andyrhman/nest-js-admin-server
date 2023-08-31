@@ -55,7 +55,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], Address.prototype, "addId", null);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => user_entity_1.User, { cascade: true }),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.address),
     (0, typeorm_1.JoinColumn)({ name: 'user_id' }),
     __metadata("design:type", user_entity_1.User)
 ], Address.prototype, "user", void 0);

@@ -24,11 +24,11 @@ let AddressController = exports.AddressController = class AddressController {
         this.userService = userService;
         this.authService = authService;
     }
-    async create(request, body) {
+    async create(id, request, body) {
         const authUser = await this.authService.userId(request);
-        const user = await this.userService.findOne({ id: authUser });
-        if (!user) {
-            throw new common_1.NotFoundException('User not found');
+        const existingAddress = await this.addressService.findOne({ user: id });
+        if (existingAddress) {
+            throw new common_1.BadRequestException("Address already exists");
         }
         return this.addressService.createAddress({
             street: body.street,
@@ -37,16 +37,17 @@ let AddressController = exports.AddressController = class AddressController {
             zip: body.zip,
             country: body.country,
             phone: body.phone,
-            user: user
+            user: authUser
         });
     }
 };
 __decorate([
     (0, common_1.Post)(':id'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Param)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AddressController.prototype, "create", null);
 exports.AddressController = AddressController = __decorate([
