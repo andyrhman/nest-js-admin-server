@@ -10,4 +10,7 @@ export declare class AddressController {
     all(): Promise<any[]>;
     create(request: Request, body: any): Promise<any>;
     update(id: string, body: any): Promise<any>;
+    delete(id: string): Promise<{
+        message: string;
+    }>;
 }

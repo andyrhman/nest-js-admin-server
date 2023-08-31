@@ -18,6 +18,7 @@ const address_service_1 = require("./address.service");
 const auth_guard_1 = require("../auth/auth.guard");
 const user_service_1 = require("../user/user.service");
 const auth_service_1 = require("../auth/auth.service");
+const class_validator_1 = require("class-validator");
 let AddressController = exports.AddressController = class AddressController {
     constructor(addressService, userService, authService) {
         this.addressService = addressService;
@@ -41,6 +42,9 @@ let AddressController = exports.AddressController = class AddressController {
         return address;
     }
     async update(id, body) {
+        if (!(0, class_validator_1.isUUID)(id)) {
+            throw new common_1.BadRequestException('Invalid UUID format');
+        }
         const address = await this.addressService.findOne({ id });
         if (!address) {
             throw new common_1.NotFoundException("Address is not exists");
@@ -54,6 +58,15 @@ let AddressController = exports.AddressController = class AddressController {
             phone: body.phone,
         });
         return this.addressService.findOne({ id });
+    }
+    async delete(id) {
+        if (!(0, class_validator_1.isUUID)(id)) {
+            throw new common_1.BadRequestException('Invalid UUID format');
+        }
+        await this.addressService.delete(id);
+        return {
+            message: "Address is deleted successfully"
+        };
     }
 };
 __decorate([
@@ -78,6 +91,13 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], AddressController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AddressController.prototype, "delete", null);
 exports.AddressController = AddressController = __decorate([
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)('address'),

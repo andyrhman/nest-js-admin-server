@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { AddressService } from './address.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UserService } from 'src/user/user.service';
@@ -45,6 +45,10 @@ export class AddressController {
         @Param('id') id: string,
         @Body() body: any
     ) {
+        if (!isUUID(id)) {
+            throw new BadRequestException('Invalid UUID format');
+        }
+
         const address = await this.addressService.findOne({ id });
         if (!address) {
             throw new NotFoundException("Address is not exists");
@@ -60,5 +64,20 @@ export class AddressController {
         });
 
         return this.addressService.findOne({ id });
+    }
+
+    @Delete(':id')
+    async delete(
+        @Param('id') id: string
+    ){
+        if (!isUUID(id)) {
+            throw new BadRequestException('Invalid UUID format');
+        }
+
+        await this.addressService.delete(id);
+
+        return{
+            message: "Address is deleted successfully"
+        }
     }
 }
