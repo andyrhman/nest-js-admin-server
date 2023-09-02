@@ -36,6 +36,7 @@ let UserService = exports.UserService = class UserService extends abstract_servi
     async findUsersByUsernameOrEmail(search) {
         return this.userRepository
             .createQueryBuilder('user')
+            .leftJoinAndSelect('user.role', 'role')
             .where('user.username ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` })
             .getMany();
     }

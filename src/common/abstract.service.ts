@@ -9,7 +9,7 @@ export abstract class AbstractService {
         protected readonly repository: Repository<any>
     ) { }
 
-    // Find all user in the DB
+    // Find all user in the DB.
     async all(relations = []): Promise<any[]> {
         return await this.repository.find({relations});
     }

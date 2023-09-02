@@ -27,9 +27,10 @@ export class UserService extends AbstractService {
         }
     }
 
-    async findUsersByUsernameOrEmail(search: string): Promise<User[]> { // Change the return type to User[]
+    async findUsersByUsernameOrEmail(search: string): Promise<User[]> {
         return this.userRepository
             .createQueryBuilder('user')
+            .leftJoinAndSelect('user.role', 'role') // Join the role table and alias it as 'role'
             .where('user.username ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` })
             .getMany();
     }
