@@ -24,21 +24,44 @@ let UserService = exports.UserService = class UserService extends abstract_servi
         this.userRepository = userRepository;
     }
     async paginate(page = 1, relations = []) {
-        const { data, meta } = await super.paginate(page, relations);
+        const take = 1;
+        const [users, total] = await this.userRepository.findAndCount({
+            take,
+            skip: (page - 1) * take,
+            relations
+        });
         return {
-            data: data.map(user => {
+            data: users.map(user => {
                 const { password, ...data } = user;
                 return data;
             }),
-            meta
+            meta: {
+                total,
+                page,
+                last_page: Math.ceil(total / take)
+            }
         };
     }
-    async findUsersByUsernameOrEmail(search) {
-        return this.userRepository
+    async findUsersByUsernameOrEmail(search, page = 1) {
+        const take = 1;
+        const [users, total] = await this.userRepository
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.role', 'role')
             .where('user.username ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` })
-            .getMany();
+            .skip((page - 1) * take)
+            .take(take)
+            .getManyAndCount();
+        return {
+            data: users.map(user => {
+                const { password, ...data } = user;
+                return data;
+            }),
+            meta: {
+                total,
+                page,
+                last_page: Math.ceil(total / take)
+            }
+        };
     }
 };
 exports.UserService = UserService = __decorate([

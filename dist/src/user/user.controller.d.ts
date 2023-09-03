@@ -9,8 +9,8 @@ export declare class UserController {
     private roleService;
     private authService;
     constructor(userService: UserService, roleService: RoleService, authService: AuthService);
-    findUsers(search: string): Promise<User[]>;
-    all(page?: number): Promise<import("../common/paginated-result.interface").PaginatedResult>;
+    findUsers(search: string, page?: number): Promise<User[]>;
+    all(page?: number): Promise<any>;
     create(body: UserCreateDto): Promise<User>;
     get(id: string): Promise<any>;
     updateInfo(request: Request, body: any): Promise<any>;

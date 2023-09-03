@@ -37,13 +37,13 @@ export class UserController {
     ) { }
 
     @Get('user')
-    async findUsers(@Query('search') search: string): Promise<User[]> {
+    async findUsers(@Query('search') search: string, @Query('page') page: number = 1): Promise<User[]> {
         // Check for malicious characters in the search input
         if (/[<>]/.test(search)) {
             throw new BadRequestException("Invalid user input");
         }
 
-        const users = await this.userService.findUsersByUsernameOrEmail(search);
+        const users = await this.userService.findUsersByUsernameOrEmail(search, page);
 
         if (users.length === 0) {
             throw new NotFoundException(`Can't find any results for your search: ${search}`);

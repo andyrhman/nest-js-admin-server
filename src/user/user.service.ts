@@ -13,26 +13,54 @@ export class UserService extends AbstractService {
         super(userRepository);
     }
 
-    async paginate(page = 1, relations = []): Promise<PaginatedResult> {
-        const { data, meta } = await super.paginate(page, relations);
+    async paginate(page = 1, relations = []): Promise<any> {
+        const take = 1;
+
+        const [users, total] = await this.userRepository.findAndCount({
+            take,
+            skip: (page - 1) * take,
+            relations
+        });
 
         return {
             // Hiding the password, don't use if you already used Interceptor.
-            data: data.map(user => {
+            data: users.map(user => {
                 const { password, ...data } = user;
 
                 return data;
             }),
-            meta
+            meta: {
+                total,
+                page,
+                last_page: Math.ceil(total / take)
+            }
         }
     }
 
-    async findUsersByUsernameOrEmail(search: string): Promise<User[]> {
-        return this.userRepository
+    async findUsersByUsernameOrEmail(search: string, page = 1): Promise<any> {
+        const take = 1;
+
+        const [users, total] = await this.userRepository
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.role', 'role') // Join the role table and alias it as 'role'
             .where('user.username ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` })
-            .getMany();
+            .skip((page - 1) * take)
+            .take(take)
+            .getManyAndCount();
+
+        return {
+            data: users.map(user => {
+                const { password, ...data } = user;
+
+                return data;
+            }),
+            meta: {
+                total,
+                page,
+                last_page: Math.ceil(total / take)
+            }
+        }
     }
+
 
 }

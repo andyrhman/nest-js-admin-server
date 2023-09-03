@@ -28,11 +28,11 @@ let UserController = exports.UserController = class UserController {
         this.roleService = roleService;
         this.authService = authService;
     }
-    async findUsers(search) {
+    async findUsers(search, page = 1) {
         if (/[<>]/.test(search)) {
             throw new common_1.BadRequestException("Invalid user input");
         }
-        const users = await this.userService.findUsersByUsernameOrEmail(search);
+        const users = await this.userService.findUsersByUsernameOrEmail(search, page);
         if (users.length === 0) {
             throw new common_1.NotFoundException(`Can't find any results for your search: ${search}`);
         }
@@ -141,8 +141,9 @@ let UserController = exports.UserController = class UserController {
 __decorate([
     (0, common_1.Get)('user'),
     __param(0, (0, common_1.Query)('search')),
+    __param(1, (0, common_1.Query)('page')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Number]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findUsers", null);
 __decorate([
