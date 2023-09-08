@@ -5,6 +5,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/user/user.service';
 import { Request } from 'express';
 import { OrderService } from 'src/order/order.service';
+import { Product } from './models/product.entity';
 export declare class ProductController {
     private productService;
     private orderService;
@@ -12,6 +13,7 @@ export declare class ProductController {
     private authService;
     constructor(productService: ProductService, orderService: OrderService, userService: UserService, authService: AuthService);
     all(page?: number): Promise<import("../common/paginated-result.interface").PaginatedResult>;
+    findUsers(search: string, page?: number): Promise<Product[]>;
     orderProducts(request: Request, orderData: {
         products: {
             id: string;

@@ -23,6 +23,9 @@ let RoleService = exports.RoleService = class RoleService extends abstract_servi
         super(roleRepository);
         this.roleRepository = roleRepository;
     }
+    async all(relations = []) {
+        return await this.repository.find({ relations, order: { id: "DESC" } });
+    }
 };
 exports.RoleService = RoleService = __decorate([
     (0, common_1.Injectable)(),

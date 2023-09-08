@@ -23,6 +23,23 @@ let ProductService = exports.ProductService = class ProductService extends abstr
         super(productRepository);
         this.productRepository = productRepository;
     }
+    async findProducts(search, page = 1) {
+        const take = 1;
+        const [products, total] = await this.productRepository
+            .createQueryBuilder('product')
+            .where('product.title ILIKE :search OR product.description ILIKE :search', { search: `%${search}%` })
+            .skip((page - 1) * take)
+            .take(take)
+            .getManyAndCount();
+        return {
+            data: products,
+            meta: {
+                total,
+                page,
+                last_page: Math.ceil(total / take)
+            }
+        };
+    }
 };
 exports.ProductService = ProductService = __decorate([
     (0, common_1.Injectable)(),

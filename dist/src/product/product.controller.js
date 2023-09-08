@@ -31,6 +31,16 @@ let ProductController = exports.ProductController = class ProductController {
     async all(page = 1) {
         return this.productService.paginate(page);
     }
+    async findUsers(search, page = 1) {
+        if (/[<>]/.test(search)) {
+            throw new common_1.BadRequestException("Invalid product input");
+        }
+        const products = await this.productService.findProducts(search, page);
+        if (products.length === 0) {
+            throw new common_1.NotFoundException(`Can't find any results for your search: ${search}`);
+        }
+        return products;
+    }
     async orderProducts(request, orderData) {
         const authUserId = await this.authService.userId(request);
         const user = await this.userService.findOne({ id: authUserId });
@@ -76,6 +86,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "all", null);
+__decorate([
+    (0, common_1.Get)('product'),
+    __param(0, (0, common_1.Query)('search')),
+    __param(1, (0, common_1.Query)('page')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:returntype", Promise)
+], ProductController.prototype, "findUsers", null);
 __decorate([
     (0, common_1.Post)('order-products'),
     __param(0, (0, common_1.Req)()),

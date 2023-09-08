@@ -8,6 +8,7 @@ import { UserService } from 'src/user/user.service';
 import { Request } from 'express';
 import { OrderService } from 'src/order/order.service';
 import { OrderItem } from 'src/order/models/order-item.entity';
+import { Product } from './models/product.entity';
 
 @UseGuards(AuthGuard)
 @Controller('products')
@@ -23,6 +24,23 @@ export class ProductController {
     @Get()
     async all(@Query('page') page = 1) {
         return this.productService.paginate(page);
+    }
+
+    // Find specific product
+    @Get('product')
+    async findUsers(@Query('search') search: string, @Query('page') page: number = 1): Promise<Product[]> {
+        // Check for malicious characters in the search input
+        if (/[<>]/.test(search)) {
+            throw new BadRequestException("Invalid product input");
+        }
+
+        const products = await this.productService.findProducts(search, page);
+
+        if (products.length === 0) {
+            throw new NotFoundException(`Can't find any results for your search: ${search}`);
+        }
+
+        return products;
     }
 
     // Order Products

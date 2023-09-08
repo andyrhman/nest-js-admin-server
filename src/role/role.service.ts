@@ -8,7 +8,12 @@ import { AbstractService } from 'src/common/abstract.service';
 export class RoleService extends AbstractService {
     constructor(
         @InjectRepository(Role) private readonly roleRepository: Repository<Role>
-    ){
+    ) {
         super(roleRepository);
     }
+
+    // Find all user in the DB
+    async all(relations = []): Promise<any[]> {
+        return await this.repository.find({relations, order: {id: "DESC"}});
+    }    
 }
