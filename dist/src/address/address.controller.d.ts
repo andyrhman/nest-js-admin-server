@@ -11,6 +11,7 @@ export declare class AddressController {
     create(request: Request, body: any): Promise<{
         message: string;
     }>;
+    get(request: Request): Promise<any>;
     update(id: string, body: any): Promise<any>;
     delete(id: string): Promise<{
         message: string;

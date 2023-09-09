@@ -37,11 +37,15 @@ let AddressController = exports.AddressController = class AddressController {
             zip: body.zip,
             country: body.country,
             phone: body.phone,
-            user: authUser
+            userId: authUser
         });
         return {
             message: "Address created successfully"
         };
+    }
+    async get(request) {
+        const id = await this.authService.userId(request);
+        return this.addressService.findOne({ userId: id });
     }
     async update(id, body) {
         if (!(0, class_validator_1.isUUID)(id)) {
@@ -85,6 +89,13 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AddressController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)('user'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AddressController.prototype, "get", null);
 __decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),

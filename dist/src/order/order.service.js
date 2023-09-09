@@ -65,6 +65,24 @@ let OrderService = exports.OrderService = class OrderService extends abstract_se
             await this.orderItemRepository.save(orderItem);
         }
     }
+    async findOrder(search, page = 1) {
+        const take = 1;
+        const [orders, total] = await this.orderRepository
+            .createQueryBuilder('order')
+            .leftJoinAndSelect('order.order_items', 'order_items')
+            .where('order.name ILIKE :search OR order.email ILIKE :search OR order_items.product_title ILIKE :search', { search: `%${search}%` })
+            .skip((page - 1) * take)
+            .take(take)
+            .getManyAndCount();
+        return {
+            data: orders,
+            meta: {
+                total,
+                page,
+                last_page: Math.ceil(total / take)
+            }
+        };
+    }
 };
 exports.OrderService = OrderService = __decorate([
     (0, common_1.Injectable)(),

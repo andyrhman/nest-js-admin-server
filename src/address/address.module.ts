@@ -15,6 +15,7 @@ import { AuthModule } from 'src/auth/auth.module';
     TypeOrmModule.forFeature([Address]),
   ],
   providers: [AddressService],
-  controllers: [AddressController]
+  controllers: [AddressController],
+  exports: [AddressService]
 })
 export class AddressModule {}

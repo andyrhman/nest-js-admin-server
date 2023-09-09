@@ -34,12 +34,21 @@ export class AddressController {
             zip: body.zip,
             country: body.country,
             phone: body.phone,
-            user: authUser // Pass the fetched user instance to createAddress
+            userId: authUser // Pass the fetched user instance to createAddress
         });
 
         return{
             message: "Address created successfully"
         };
+    }
+
+    @Get('user')
+    async get(
+        @Req() request: Request,
+    ) {
+        const id = await this.authService.userId(request);
+    
+        return this.addressService.findOne({ userId: id });  // Use the explicit column in the query
     }
 
     @Put(':id')

@@ -64,6 +64,26 @@ export class OrderService extends AbstractService {
         }
     }
 
+    async findOrder(search: string, page = 1): Promise<any> {
+        const take = 1;
+
+        const [orders, total] = await this.orderRepository
+            .createQueryBuilder('order')
+            .leftJoinAndSelect('order.order_items', 'order_items') // Join the role table and alias it as 'role'
+            .where('order.name ILIKE :search OR order.email ILIKE :search OR order_items.product_title ILIKE :search', { search: `%${search}%` })
+            .skip((page - 1) * take)
+            .take(take)
+            .getManyAndCount();
+
+        return {
+            data: orders,
+            meta: {
+                total,
+                page,
+                last_page: Math.ceil(total / take)
+            }
+        }
+    }
 
     // async createOrderItem(data): Promise<OrderItem> {
     //     return this.orderItemRepository.save(data);

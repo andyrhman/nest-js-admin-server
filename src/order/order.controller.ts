@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, Post, Query, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Post, Query, Res, UseGuards, UseInterceptors } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Response } from 'express';
@@ -21,6 +21,22 @@ export class OrderController {
     async all(@Query('page') page = 1) {
         // return this.orderService.all(['order_items'])
         return this.orderService.paginate(page, ['order_items']);
+    }
+
+    @Get('order')
+    async findUsers(@Query('search') search: string, @Query('page') page: number = 1): Promise<Order[]> {
+        // Check for malicious characters in the search input
+        if (/[<>]/.test(search)) {
+            throw new BadRequestException("Invalid user input");
+        }
+
+        const orders = await this.orderService.findOrder(search, page);
+
+        if (orders.length === 0) {
+            throw new NotFoundException(`Can't find any results for your search: ${search}`);
+        }
+
+        return orders;
     }
 
     // Export csv

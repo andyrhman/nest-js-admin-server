@@ -26,7 +26,8 @@ exports.AddressModule = AddressModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([address_entity_1.Address]),
         ],
         providers: [address_service_1.AddressService],
-        controllers: [address_controller_1.AddressController]
+        controllers: [address_controller_1.AddressController],
+        exports: [address_service_1.AddressService]
     })
 ], AddressModule);
 //# sourceMappingURL=address.module.js.map

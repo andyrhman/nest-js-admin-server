@@ -10,4 +10,5 @@ export declare class OrderService extends AbstractService {
     paginate(page?: number, relations?: any[]): Promise<PaginatedResult>;
     chart(): Promise<any[]>;
     createOrderItem(data: any): Promise<any>;
+    findOrder(search: string, page?: number): Promise<any>;
 }

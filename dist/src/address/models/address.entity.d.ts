@@ -7,6 +7,7 @@ export declare class Address {
     zip: string;
     country: string;
     phone: number;
+    userId: string;
     addId(): void;
     user: User;
 }

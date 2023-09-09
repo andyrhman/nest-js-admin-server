@@ -25,6 +25,16 @@ let OrderController = exports.OrderController = class OrderController {
     async all(page = 1) {
         return this.orderService.paginate(page, ['order_items']);
     }
+    async findUsers(search, page = 1) {
+        if (/[<>]/.test(search)) {
+            throw new common_1.BadRequestException("Invalid user input");
+        }
+        const orders = await this.orderService.findOrder(search, page);
+        if (orders.length === 0) {
+            throw new common_1.NotFoundException(`Can't find any results for your search: ${search}`);
+        }
+        return orders;
+    }
     async export(res) {
         const parser = new json2csv_1.Parser({
             fields: ['ID', 'Name', 'Email', 'Product Title', 'Price', 'Quantity']
@@ -68,6 +78,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "all", null);
+__decorate([
+    (0, common_1.Get)('order'),
+    __param(0, (0, common_1.Query)('search')),
+    __param(1, (0, common_1.Query)('page')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:returntype", Promise)
+], OrderController.prototype, "findUsers", null);
 __decorate([
     (0, common_1.Post)('export'),
     (0, permission_decorator_1.HasPermission)('orders'),

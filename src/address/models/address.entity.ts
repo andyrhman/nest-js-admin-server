@@ -25,6 +25,9 @@ export class Address {
   @Column()
   phone: number;
 
+  @Column({ name: 'user_id' })  // Explicit column for the foreign key
+  userId: string;
+
   @BeforeInsert()
   addId() {
     if (!this.id) {
