@@ -13,6 +13,7 @@ exports.Order = void 0;
 const typeorm_1 = require("typeorm");
 const order_item_entity_1 = require("./order-item.entity");
 const class_transformer_1 = require("class-transformer");
+const user_entity_1 = require("../../user/models/user.entity");
 let Order = exports.Order = class Order {
     get total() {
         return this.order_items.reduce((sum, i) => sum + i.quantity * i.price, 0);
@@ -35,9 +36,18 @@ __decorate([
     __metadata("design:type", String)
 ], Order.prototype, "created_at", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'user_id' }),
+    __metadata("design:type", String)
+], Order.prototype, "userId", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => order_item_entity_1.OrderItem, orderItem => orderItem.order),
     __metadata("design:type", Array)
 ], Order.prototype, "order_items", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => user_entity_1.User),
+    (0, typeorm_1.JoinColumn)({ name: "user_id" }),
+    __metadata("design:type", user_entity_1.User)
+], Order.prototype, "user", void 0);
 __decorate([
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number),

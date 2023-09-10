@@ -51,19 +51,26 @@ let OrderService = exports.OrderService = class OrderService extends abstract_se
         const result = await this.orderRepository.query(query);
         return result;
     }
-    async createOrderItem(data) {
+    async createOrders(data) {
         const order = new order_entity_1.Order();
         order.name = data.name;
         order.email = data.email;
+        order.userId = data.userId;
         await this.orderRepository.save(order);
-        for (const productData of data.products) {
-            const orderItem = new order_item_entity_1.OrderItem();
-            orderItem.product_title = productData.product_title;
-            orderItem.price = productData.price;
-            orderItem.quantity = productData.quantity;
-            orderItem.order = order;
-            await this.orderItemRepository.save(orderItem);
-        }
+        const orderItem = new order_item_entity_1.OrderItem();
+        orderItem.product_title = data.product_title;
+        orderItem.price = data.price;
+        orderItem.quantity = data.quantity;
+        orderItem.order = order;
+        await this.orderItemRepository.save(orderItem);
+    }
+    async createOrderItem(data) {
+        const orderItem = new order_item_entity_1.OrderItem();
+        orderItem.product_title = data.product_title;
+        orderItem.price = data.price;
+        orderItem.quantity = data.quantity;
+        orderItem.order = data.order;
+        await this.orderItemRepository.save(orderItem);
     }
     async findOrder(search, page = 1) {
         const take = 1;

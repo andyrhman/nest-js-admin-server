@@ -48,42 +48,31 @@ export class OrderController {
         const parser = new Parser({
             fields: ['ID', 'Name', 'Email', 'Product Title', 'Price', 'Quantity']
         });
-
+    
         const orders = await this.orderService.all(['order_items']);
-
+    
         const json = [];   
-
+    
         orders.forEach((o: Order) => {
-            json.push({
-                ID: o.id,
-                Name: o.name,
-                Email: o.email,
-                'Product Title': '',
-                Price: '',
-                Quantity: ''
-            });
-
             o.order_items.forEach((i: OrderItem) => {
                 json.push({
-                    ID: '',
-                    Name: '',
-                    Email: '',
+                    ID: o.id,
+                    Name: o.name,
+                    Email: o.email,
                     'Product Title': i.product_title,
                     Price: i.price,
                     Quantity: i.quantity
                 });
-            })
+            });
         });
-
+    
         const csv = parser.parse(json);
-
+    
         res.header('Content-Type', 'text/csv');
         res.attachment('orders.csv');
         res.send(csv);
-        // here's the alternative
-        // https://chat.openai.com/share/04b5c77d-ae0d-4e2f-9da7-51f5495c883d
     }
-
+    
     @Get('chart')
     @HasPermission('orders')
     async orders(){

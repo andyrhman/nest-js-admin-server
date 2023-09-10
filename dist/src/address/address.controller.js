@@ -43,6 +43,25 @@ let AddressController = exports.AddressController = class AddressController {
             message: "Address created successfully"
         };
     }
+    async test(request, body) {
+        const authUser = await this.authService.userId(request);
+        const existingAddress = await this.addressService.findOne({ userId: authUser });
+        if (existingAddress) {
+            throw new common_1.BadRequestException('address already exists');
+        }
+        await this.addressService.create({
+            street: body.street,
+            city: body.city,
+            province: body.province,
+            zip: body.zip,
+            country: body.country,
+            phone: body.phone,
+            userId: authUser
+        });
+        return {
+            message: "Address created successfully"
+        };
+    }
     async get(request) {
         const id = await this.authService.userId(request);
         return this.addressService.findOne({ userId: id });
@@ -89,6 +108,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AddressController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('test'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AddressController.prototype, "test", null);
 __decorate([
     (0, common_1.Get)('user'),
     __param(0, (0, common_1.Req)()),

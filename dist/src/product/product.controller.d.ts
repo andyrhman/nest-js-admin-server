@@ -14,12 +14,7 @@ export declare class ProductController {
     constructor(productService: ProductService, orderService: OrderService, userService: UserService, authService: AuthService);
     all(page?: number): Promise<import("../common/paginated-result.interface").PaginatedResult>;
     findUsers(search: string, page?: number): Promise<Product[]>;
-    orderProducts(request: Request, orderData: {
-        products: {
-            id: string;
-            quantity: number;
-        }[];
-    }): Promise<{
+    test(request: Request, body: any): Promise<{
         message: string;
     }>;
     create(body: ProductCreateDto): Promise<any>;

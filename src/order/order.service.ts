@@ -47,21 +47,28 @@ export class OrderService extends AbstractService {
         return result;
     }
 
-    // https://www.phind.com/search?cache=wdvxsmhkrcrqiw58fftdzj28
-    async createOrderItem(data): Promise<any> {
+    async createOrders(data): Promise<any> {
         const order = new Order();
         order.name = data.name;
         order.email = data.email;
+        order.userId = data.userId;
         await this.orderRepository.save(order);
 
-        for (const productData of data.products) {
-            const orderItem = new OrderItem();
-            orderItem.product_title = productData.product_title;
-            orderItem.price = productData.price;
-            orderItem.quantity = productData.quantity;
-            orderItem.order = order;
-            await this.orderItemRepository.save(orderItem);
-        }
+        const orderItem = new OrderItem();
+        orderItem.product_title = data.product_title;
+        orderItem.price = data.price;
+        orderItem.quantity = data.quantity;
+        orderItem.order = order;
+        await this.orderItemRepository.save(orderItem);
+    }
+
+    async createOrderItem(data): Promise<any> {
+        const orderItem = new OrderItem();
+        orderItem.product_title = data.product_title;
+        orderItem.price = data.price;
+        orderItem.quantity = data.quantity;
+        orderItem.order = data.order;
+        await this.orderItemRepository.save(orderItem);
     }
 
     async findOrder(search: string, page = 1): Promise<any> {
@@ -84,6 +91,23 @@ export class OrderService extends AbstractService {
             }
         }
     }
+
+    // https://www.phind.com/search?cache=wdvxsmhkrcrqiw58fftdzj28
+    // async createOrderItem(data): Promise<any> {
+    //     const order = new Order();
+    //     order.name = data.name;
+    //     order.email = data.email;
+    //     await this.orderRepository.save(order);
+
+    //     for (const productData of data.products) {
+    //         const orderItem = new OrderItem();
+    //         orderItem.product_title = productData.product_title;
+    //         orderItem.price = productData.price;
+    //         orderItem.quantity = productData.quantity;
+    //         orderItem.order = order;
+    //         await this.orderItemRepository.save(orderItem);
+    //     }
+    // }
 
     // async createOrderItem(data): Promise<OrderItem> {
     //     return this.orderItemRepository.save(data);

@@ -41,26 +41,30 @@ let ProductController = exports.ProductController = class ProductController {
         }
         return products;
     }
-    async orderProducts(request, orderData) {
-        const authUserId = await this.authService.userId(request);
-        const user = await this.userService.findOne({ id: authUserId });
-        const products = [];
-        for (const productData of orderData.products) {
-            const product = await this.productService.findOne({ id: productData.id });
-            if (!product) {
-                throw new common_1.NotFoundException(`Product with ID ${productData.id} not found`);
-            }
-            products.push({
-                product_title: product.title,
-                price: product.price,
-                quantity: productData.quantity
+    async test(request, body) {
+        const { id, quantity } = body;
+        const userId = await this.authService.userId(request);
+        const user = await this.userService.findOne({ id: userId });
+        const productData = await this.productService.findOne({ id: id });
+        const exstingOrder = await this.orderService.findOne({ userId: userId });
+        if (exstingOrder) {
+            await this.orderService.createOrderItem({
+                product_title: productData.title,
+                price: productData.price,
+                quantity: quantity,
+                order: exstingOrder.id
             });
         }
-        await this.orderService.createOrderItem({
-            name: user.username,
-            email: user.email,
-            products
-        });
+        else if (!exstingOrder) {
+            await this.orderService.createOrders({
+                name: user.username,
+                email: user.email,
+                product_title: productData.title,
+                price: productData.price,
+                quantity: quantity,
+                userId: userId
+            });
+        }
         return {
             message: "Your order has been created!"
         };
@@ -101,7 +105,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], ProductController.prototype, "orderProducts", null);
+], ProductController.prototype, "test", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

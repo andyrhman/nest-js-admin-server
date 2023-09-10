@@ -42,19 +42,11 @@ let OrderController = exports.OrderController = class OrderController {
         const orders = await this.orderService.all(['order_items']);
         const json = [];
         orders.forEach((o) => {
-            json.push({
-                ID: o.id,
-                Name: o.name,
-                Email: o.email,
-                'Product Title': '',
-                Price: '',
-                Quantity: ''
-            });
             o.order_items.forEach((i) => {
                 json.push({
-                    ID: '',
-                    Name: '',
-                    Email: '',
+                    ID: o.id,
+                    Name: o.name,
+                    Email: o.email,
                     'Product Title': i.product_title,
                     Price: i.price,
                     Quantity: i.quantity

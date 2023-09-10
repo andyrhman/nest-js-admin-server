@@ -9,6 +9,7 @@ export declare class OrderService extends AbstractService {
     constructor(orderRepository: Repository<Order>, orderItemRepository: Repository<OrderItem>);
     paginate(page?: number, relations?: any[]): Promise<PaginatedResult>;
     chart(): Promise<any[]>;
+    createOrders(data: any): Promise<any>;
     createOrderItem(data: any): Promise<any>;
     findOrder(search: string, page?: number): Promise<any>;
 }

@@ -16,7 +16,7 @@ export class AddressController {
     ) { }
 
     @Get()
-    async all(){
+    async all() {
         return this.addressService.all(['user']);
     }
 
@@ -37,9 +37,37 @@ export class AddressController {
             userId: authUser // Pass the fetched user instance to createAddress
         });
 
-        return{
+        return {
             message: "Address created successfully"
         };
+    }
+
+    @Post('test')
+    async test(
+        @Req() request: Request,
+        @Body() body: any
+    ) {
+        const authUser = await this.authService.userId(request);
+        const existingAddress = await this.addressService.findOne({ userId: authUser })
+
+        if (existingAddress) {
+            throw new BadRequestException('address already exists');
+        }
+        
+        await this.addressService.create({
+            street: body.street,
+            city: body.city,
+            province: body.province,
+            zip: body.zip,
+            country: body.country,
+            phone: body.phone,
+            userId: authUser // Pass the fetched user instance to createAddress
+        });
+
+        return {
+            message: "Address created successfully"
+        };
+
     }
 
     @Get('user')
@@ -47,7 +75,7 @@ export class AddressController {
         @Req() request: Request,
     ) {
         const id = await this.authService.userId(request);
-    
+
         return this.addressService.findOne({ userId: id });  // Use the explicit column in the query
     }
 
@@ -80,14 +108,14 @@ export class AddressController {
     @Delete(':id')
     async delete(
         @Param('id') id: string
-    ){
+    ) {
         if (!isUUID(id)) {
             throw new BadRequestException('Invalid UUID format');
         }
 
         await this.addressService.delete(id);
 
-        return{
+        return {
             message: "Address is deleted successfully"
         }
     }
