@@ -36,11 +36,12 @@ export class OrderService extends AbstractService {
     async chart(): Promise<any[]> {
         const query = `
             SELECT
-            TO_CHAR(o.created_at, 'YYYY-MM-DD') as data,
-            TO_CHAR(sum(i.price * i.quantity), 'FM999,999,999') as sum
+            TO_CHAR(o.created_at, 'YYYY-MM-DD') as date,
+            REPLACE(TO_CHAR(TRUNC(sum(i.price * i.quantity)), 'FM999G999G999'), ',', '') as sum
             FROM orders o
             JOIN order_items i on o.id = i.order_id
-            GROUP BY TO_CHAR(o.created_at, 'YYYY-MM-DD');
+            GROUP BY TO_CHAR(o.created_at, 'YYYY-MM-DD')
+            ORDER BY TO_CHAR(o.created_at, 'YYYY-MM-DD') ASC;      
         `;
 
         const result = await this.orderRepository.query(query);
@@ -69,6 +70,19 @@ export class OrderService extends AbstractService {
         orderItem.quantity = data.quantity;
         orderItem.order = data.order;
         await this.orderItemRepository.save(orderItem);
+    }
+
+    async updateStatus(id: number, data): Promise<any> {
+        return this.orderItemRepository.update(id, data);
+    }
+
+    // Find all user in the DB.
+    async allOrderItem(relations = []): Promise<any[]> {
+        return await this.orderItemRepository.find({ relations });
+    }
+
+    async findOneOrderItem(options, relations = []) {
+        return this.orderItemRepository.findOne({ where: options, relations });
     }
 
     async findOrder(search: string, page = 1): Promise<any> {

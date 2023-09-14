@@ -70,7 +70,7 @@ let AuthController = exports.AuthController = class AuthController {
     }
     async user(request) {
         const id = await this.authService.userId(request);
-        return this.userService.findOne({ id });
+        return this.userService.findOne({ id }, ['role']);
     }
     async logout(response) {
         response.clearCookie('user_session');

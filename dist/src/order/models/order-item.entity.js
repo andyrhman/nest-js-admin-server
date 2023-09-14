@@ -9,9 +9,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrderItem = void 0;
+exports.OrderItem = exports.OrderItemStatus = void 0;
 const typeorm_1 = require("typeorm");
 const order_entity_1 = require("./order.entity");
+var OrderItemStatus;
+(function (OrderItemStatus) {
+    OrderItemStatus["SedangDikemas"] = "Sedang Dikemas";
+    OrderItemStatus["Dikirim"] = "Dikirim";
+    OrderItemStatus["Selesai"] = "Selesai";
+})(OrderItemStatus || (exports.OrderItemStatus = OrderItemStatus = {}));
 let OrderItem = exports.OrderItem = class OrderItem {
 };
 __decorate([
@@ -30,6 +36,14 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], OrderItem.prototype, "quantity", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: OrderItemStatus,
+        default: OrderItemStatus.SedangDikemas,
+    }),
+    __metadata("design:type", String)
+], OrderItem.prototype, "status", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => order_entity_1.Order, order => order.order_items),
     (0, typeorm_1.JoinColumn)({ name: 'order_id' }),

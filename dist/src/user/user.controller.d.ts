@@ -10,6 +10,7 @@ export declare class UserController {
     private authService;
     constructor(userService: UserService, roleService: RoleService, authService: AuthService);
     findUsers(search: string, page?: number): Promise<User[]>;
+    findUsersRegister(search: string): Promise<User[]>;
     all(page?: number): Promise<any>;
     create(body: UserCreateDto): Promise<User>;
     get(id: string): Promise<any>;

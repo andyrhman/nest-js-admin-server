@@ -7,7 +7,6 @@ import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/user/user.service';
 import { Request } from 'express';
 import { OrderService } from 'src/order/order.service';
-import { OrderItem } from 'src/order/models/order-item.entity';
 import { Product } from './models/product.entity';
 
 @UseGuards(AuthGuard)

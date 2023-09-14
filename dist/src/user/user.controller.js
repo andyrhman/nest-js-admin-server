@@ -38,6 +38,16 @@ let UserController = exports.UserController = class UserController {
         }
         return users;
     }
+    async findUsersRegister(search) {
+        if (/[<>]/.test(search)) {
+            throw new common_1.BadRequestException("Invalid user input");
+        }
+        const users = await this.userService.findUsersRegister(search);
+        if (users.length === 0) {
+            throw new common_1.NotFoundException(`Can't find any results for your search: ${search}`);
+        }
+        return users;
+    }
     async all(page = 1) {
         return await this.userService.paginate(page, ['role']);
     }
@@ -146,6 +156,13 @@ __decorate([
     __metadata("design:paramtypes", [String, Number]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findUsers", null);
+__decorate([
+    (0, common_1.Get)('userf'),
+    __param(0, (0, common_1.Query)('search')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "findUsersRegister", null);
 __decorate([
     (0, common_1.Get)(),
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),

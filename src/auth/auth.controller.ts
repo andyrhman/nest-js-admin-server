@@ -111,7 +111,7 @@ export class AuthController {
     ) {
         const id = await this.authService.userId(request);
 
-        return this.userService.findOne({ id });
+        return this.userService.findOne({ id }, ['role']);
     }
 
     // Getting the authenticated user.

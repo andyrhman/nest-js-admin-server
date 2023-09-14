@@ -63,6 +63,12 @@ let UserService = exports.UserService = class UserService extends abstract_servi
             }
         };
     }
+    async findUsersRegister(search) {
+        return this.userRepository
+            .createQueryBuilder('user')
+            .where('user.username ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` })
+            .getMany();
+    }
 };
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),

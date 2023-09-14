@@ -11,5 +11,8 @@ export declare class OrderService extends AbstractService {
     chart(): Promise<any[]>;
     createOrders(data: any): Promise<any>;
     createOrderItem(data: any): Promise<any>;
+    updateStatus(id: number, data: any): Promise<any>;
+    allOrderItem(relations?: any[]): Promise<any[]>;
+    findOneOrderItem(options: any, relations?: any[]): Promise<OrderItem>;
     findOrder(search: string, page?: number): Promise<any>;
 }

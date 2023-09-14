@@ -62,5 +62,12 @@ export class UserService extends AbstractService {
         }
     }
 
+    async findUsersRegister(search: string): Promise<User[]> { // Change the return type to User[]
+        return this.userRepository
+        .createQueryBuilder('user')
+        .where('user.username ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` })
+        .getMany();
+    }
+
 
 }

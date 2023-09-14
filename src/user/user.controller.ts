@@ -52,6 +52,22 @@ export class UserController {
         return users;
     }
 
+    @Get('userf')
+    async findUsersRegister(@Query('search') search: string): Promise<User[]> {
+        // Check for malicious characters in the search input
+        if (/[<>]/.test(search)) {
+            throw new BadRequestException("Invalid user input");
+        }
+
+        const users = await this.userService.findUsersRegister(search);
+
+        if (users.length === 0) {
+            throw new NotFoundException(`Can't find any results for your search: ${search}`);
+        }
+
+        return users;
+    }
+
     @Get()
     @UseGuards(AuthGuard)
     @HasPermission('users')
