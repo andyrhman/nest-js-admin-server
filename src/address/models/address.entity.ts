@@ -23,7 +23,7 @@ export class Address {
   country: string;
 
   @Column()
-  phone: number;
+  phone: string;
 
   @Column({ name: 'user_id' })  // Explicit column for the foreign key
   userId: string;

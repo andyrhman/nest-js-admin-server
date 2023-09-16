@@ -8,14 +8,13 @@ export declare class AddressController {
     private authService;
     constructor(addressService: AddressService, userService: UserService, authService: AuthService);
     all(): Promise<any[]>;
-    create(request: Request, body: any): Promise<{
-        message: string;
-    }>;
     test(request: Request, body: any): Promise<{
         message: string;
     }>;
     get(request: Request): Promise<any>;
-    update(id: string, body: any): Promise<any>;
+    update(body: any, request: Request): Promise<{
+        message: string;
+    }>;
     delete(id: string): Promise<{
         message: string;
     }>;

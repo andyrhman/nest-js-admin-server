@@ -28,21 +28,6 @@ let AddressController = exports.AddressController = class AddressController {
     async all() {
         return this.addressService.all(['user']);
     }
-    async create(request, body) {
-        const authUser = await this.authService.userId(request);
-        await this.addressService.create({
-            street: body.street,
-            city: body.city,
-            province: body.province,
-            zip: body.zip,
-            country: body.country,
-            phone: body.phone,
-            userId: authUser
-        });
-        return {
-            message: "Address created successfully"
-        };
-    }
     async test(request, body) {
         const authUser = await this.authService.userId(request);
         const existingAddress = await this.addressService.findOne({ userId: authUser });
@@ -64,17 +49,19 @@ let AddressController = exports.AddressController = class AddressController {
     }
     async get(request) {
         const id = await this.authService.userId(request);
+        const checkAddress = await this.addressService.findOne({ userId: id });
+        if (!checkAddress) {
+            throw new common_1.NotFoundException('Address not found');
+        }
         return this.addressService.findOne({ userId: id });
     }
-    async update(id, body) {
-        if (!(0, class_validator_1.isUUID)(id)) {
-            throw new common_1.BadRequestException('Invalid UUID format');
+    async update(body, request) {
+        const id = await this.authService.userId(request);
+        const checkAddress = await this.addressService.findOne({ userId: id });
+        if (!checkAddress) {
+            throw new common_1.NotFoundException('Address not found');
         }
-        const address = await this.addressService.findOne({ id });
-        if (!address) {
-            throw new common_1.NotFoundException("Address is not exists");
-        }
-        await this.addressService.update(id, {
+        await this.addressService.update(checkAddress, {
             street: body.street,
             city: body.city,
             province: body.province,
@@ -82,7 +69,9 @@ let AddressController = exports.AddressController = class AddressController {
             country: body.country,
             phone: body.phone,
         });
-        return this.addressService.findOne({ id });
+        return {
+            message: "Updated Successfully!"
+        };
     }
     async delete(id) {
         if (!(0, class_validator_1.isUUID)(id)) {
@@ -107,14 +96,6 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], AddressController.prototype, "create", null);
-__decorate([
-    (0, common_1.Post)('test'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
 ], AddressController.prototype, "test", null);
 __decorate([
     (0, common_1.Get)('user'),
@@ -124,11 +105,11 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AddressController.prototype, "get", null);
 __decorate([
-    (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.Put)(),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AddressController.prototype, "update", null);
 __decorate([

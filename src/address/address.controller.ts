@@ -21,28 +21,6 @@ export class AddressController {
     }
 
     @Post()
-    async create(
-        @Req() request: Request,
-        @Body() body: any
-    ) {
-        const authUser = await this.authService.userId(request);
-
-        await this.addressService.create({
-            street: body.street,
-            city: body.city,
-            province: body.province,
-            zip: body.zip,
-            country: body.country,
-            phone: body.phone,
-            userId: authUser // Pass the fetched user instance to createAddress
-        });
-
-        return {
-            message: "Address created successfully"
-        };
-    }
-
-    @Post('test')
     async test(
         @Req() request: Request,
         @Body() body: any
@@ -53,7 +31,7 @@ export class AddressController {
         if (existingAddress) {
             throw new BadRequestException('address already exists');
         }
-        
+
         await this.addressService.create({
             street: body.street,
             city: body.city,
@@ -76,24 +54,30 @@ export class AddressController {
     ) {
         const id = await this.authService.userId(request);
 
+        const checkAddress = await this.addressService.findOne({ userId: id });
+
+        if (!checkAddress) {
+            throw new NotFoundException('Address not found');
+        }
+
         return this.addressService.findOne({ userId: id });  // Use the explicit column in the query
     }
 
-    @Put(':id')
+    // * Update Address
+    @Put()
     async update(
-        @Param('id') id: string,
-        @Body() body: any
+        @Body() body: any,
+        @Req() request: Request,
     ) {
-        if (!isUUID(id)) {
-            throw new BadRequestException('Invalid UUID format');
+        const id = await this.authService.userId(request);
+
+        const checkAddress = await this.addressService.findOne({ userId: id });
+
+        if (!checkAddress) {
+            throw new NotFoundException('Address not found');
         }
 
-        const address = await this.addressService.findOne({ id });
-        if (!address) {
-            throw new NotFoundException("Address is not exists");
-        }
-
-        await this.addressService.update(id, {
+        await this.addressService.update(checkAddress, {
             street: body.street,
             city: body.city,
             province: body.province,
@@ -102,7 +86,9 @@ export class AddressController {
             phone: body.phone,
         });
 
-        return this.addressService.findOne({ id });
+        return {
+            message: "Updated Successfully!"
+        };
     }
 
     @Delete(':id')
@@ -119,4 +105,46 @@ export class AddressController {
             message: "Address is deleted successfully"
         }
     }
+
+    // * Update specific address data
+    // @Put()
+    // async update(
+    //     @Body() body: any,
+    //     @Req() request: Request,
+    // ) {
+    //     const { street, city, province, zip, country, phone } = body;
+    //     const id = await this.authService.userId(request);
+
+    //     const checkAddress = await this.addressService.findOne({ userId: id });
+
+    //     if (!checkAddress) {
+    //         throw new NotFoundException('Address not found');
+    //     }
+
+    //     const updateData: { [key: string]: string | number | undefined } = {};
+    //     if (body.street !== undefined) {
+    //         updateData.street = body.street;
+    //     }
+    //     if (body.city !== undefined) {
+    //         updateData.city = body.city;
+    //     }
+    //     if (body.province !== undefined) {
+    //         updateData.province = body.province;
+    //     }
+    //     if (body.zip !== undefined) {
+    //         updateData.zip = body.zip;
+    //     }
+    //     if (body.country !== undefined) {
+    //         updateData.country = body.country;
+    //     }
+    //     if (body.phone !== undefined) {
+    //         updateData.phone = body.phone;
+    //     }
+
+    //     await this.addressService.update(checkAddress, updateData);
+
+    //     return {
+    //         message: "Updated Successfully!"
+    //     };
+    // }
 }

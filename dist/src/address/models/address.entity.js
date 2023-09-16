@@ -46,7 +46,7 @@ __decorate([
 ], Address.prototype, "country", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], Address.prototype, "phone", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'user_id' }),
