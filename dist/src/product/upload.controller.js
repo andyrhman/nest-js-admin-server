@@ -26,6 +26,14 @@ let UploadController = exports.UploadController = class UploadController {
     async getImage(path, response) {
         response.sendFile(path, { root: 'uploads' });
     }
+    uploadFileMultiple(files) {
+        return files.map(file => ({
+            url: `http://localhost:8000/api/${file.path}`
+        }));
+    }
+    async getImageMultiple(path, response) {
+        response.sendFile(path, { root: 'uploads' });
+    }
 };
 __decorate([
     (0, common_1.Post)('upload'),
@@ -51,6 +59,30 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UploadController.prototype, "getImage", null);
+__decorate([
+    (0, common_1.Post)('upload/multiple'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('image', 20, {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads',
+            filename(_, file, callback) {
+                const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
+                return callback(null, `${randomName}${(0, path_1.extname)(file.originalname)}`);
+            },
+        })
+    })),
+    __param(0, (0, common_1.UploadedFiles)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UploadController.prototype, "uploadFileMultiple", null);
+__decorate([
+    (0, common_1.Get)('uploads/:path'),
+    __param(0, (0, common_1.Param)('path')),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UploadController.prototype, "getImageMultiple", null);
 exports.UploadController = UploadController = __decorate([
     (0, common_1.Controller)()
 ], UploadController);

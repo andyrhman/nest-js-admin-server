@@ -31,6 +31,9 @@ let ProductController = exports.ProductController = class ProductController {
     async all(page = 1) {
         return this.productService.paginate(page);
     }
+    async show() {
+        return this.productService.all();
+    }
     async findUsers(search, page = 1) {
         if (/[<>]/.test(search)) {
             throw new common_1.BadRequestException("Invalid product input");
@@ -70,16 +73,22 @@ let ProductController = exports.ProductController = class ProductController {
         };
     }
     async create(body) {
-        return this.productService.create(body);
+        return this.productService.createImages(body);
     }
     async get(id) {
         return this.productService.findOne({ id });
     }
     async update(id, body) {
+        const findImages = await this.productService.findProductImages({ productId: id });
+        await this.productService.deleteImages(findImages.productId);
         await this.productService.update(id, body);
         return this.productService.findOne({ id });
     }
     async delete(id) {
+        const findImages = [await this.productService.findProductImages({ productId: id })];
+        for (const image of findImages) {
+            await this.productService.deleteImages(image.productId);
+        }
         return this.productService.delete(id);
     }
 };
@@ -90,6 +99,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "all", null);
+__decorate([
+    (0, common_1.Get)('show'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProductController.prototype, "show", null);
 __decorate([
     (0, common_1.Get)('product'),
     __param(0, (0, common_1.Query)('search')),
@@ -115,6 +130,7 @@ __decorate([
 ], ProductController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -122,6 +138,7 @@ __decorate([
 ], ProductController.prototype, "get", null);
 __decorate([
     (0, common_1.Put)(':id'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -130,13 +147,13 @@ __decorate([
 ], ProductController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "delete", null);
 exports.ProductController = ProductController = __decorate([
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)('products'),
     __metadata("design:paramtypes", [product_service_1.ProductService,
         order_service_1.OrderService,

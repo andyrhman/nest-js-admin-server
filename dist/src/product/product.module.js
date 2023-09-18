@@ -16,12 +16,13 @@ const upload_controller_1 = require("./upload.controller");
 const auth_module_1 = require("../auth/auth.module");
 const user_module_1 = require("../user/user.module");
 const order_module_1 = require("../order/order.module");
+const product_images_entity_1 = require("./models/product-images.entity");
 let ProductModule = exports.ProductModule = class ProductModule {
 };
 exports.ProductModule = ProductModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([product_entity_1.Product]),
+            typeorm_1.TypeOrmModule.forFeature([product_entity_1.Product, product_images_entity_1.ProductImages]),
             auth_module_1.AuthModule,
             user_module_1.UserModule,
             order_module_1.OrderModule

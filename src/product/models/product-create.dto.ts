@@ -8,7 +8,10 @@ export class ProductCreateDto {
     description: string;
 
     @IsNotEmpty()
-    image: string;
+    image: string; // primary image of the product
+
+    @IsNotEmpty()
+    images: string[]; // array of additional image URLs
 
     @IsNotEmpty()
     price: number

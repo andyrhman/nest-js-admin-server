@@ -9,29 +9,29 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProductCreateDto = void 0;
-const class_validator_1 = require("class-validator");
-class ProductCreateDto {
-}
-exports.ProductCreateDto = ProductCreateDto;
+exports.ProductImages = void 0;
+const typeorm_1 = require("typeorm");
+const product_entity_1 = require("./product.entity");
+let ProductImages = exports.ProductImages = class ProductImages {
+};
 __decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], ProductCreateDto.prototype, "title", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], ProductCreateDto.prototype, "description", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], ProductCreateDto.prototype, "image", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", Array)
-], ProductCreateDto.prototype, "images", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], ProductCreateDto.prototype, "price", void 0);
-//# sourceMappingURL=product-create.dto.js.map
+], ProductImages.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: "product_id" }),
+    __metadata("design:type", String)
+], ProductImages.prototype, "productId", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], ProductImages.prototype, "image", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => product_entity_1.Product),
+    (0, typeorm_1.JoinColumn)({ name: "product_id" }),
+    __metadata("design:type", product_entity_1.Product)
+], ProductImages.prototype, "product", void 0);
+exports.ProductImages = ProductImages = __decorate([
+    (0, typeorm_1.Entity)('product_images')
+], ProductImages);
+//# sourceMappingURL=product-images.entity.js.map

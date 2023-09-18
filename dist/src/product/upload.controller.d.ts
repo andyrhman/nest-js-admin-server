@@ -4,4 +4,6 @@ export declare class UploadController {
         url: string;
     };
     getImage(path: any, response: Response): Promise<void>;
+    uploadFileMultiple(files: any): any;
+    getImageMultiple(path: any, response: Response): Promise<void>;
 }

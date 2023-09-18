@@ -20,7 +20,7 @@ let AbstractService = exports.AbstractService = class AbstractService {
         return await this.repository.find({ relations });
     }
     async paginate(page = 1, relations = []) {
-        const take = 1;
+        const take = 12;
         const [data, total] = await this.repository.findAndCount({
             take,
             skip: (page - 1) * take,

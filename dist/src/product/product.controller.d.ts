@@ -13,6 +13,7 @@ export declare class ProductController {
     private authService;
     constructor(productService: ProductService, orderService: OrderService, userService: UserService, authService: AuthService);
     all(page?: number): Promise<import("../common/paginated-result.interface").PaginatedResult>;
+    show(): Promise<any[]>;
     findUsers(search: string, page?: number): Promise<Product[]>;
     test(request: Request, body: any): Promise<{
         message: string;

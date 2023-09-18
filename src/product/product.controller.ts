@@ -9,7 +9,6 @@ import { Request } from 'express';
 import { OrderService } from 'src/order/order.service';
 import { Product } from './models/product.entity';
 
-@UseGuards(AuthGuard)
 @Controller('products')
 export class ProductController {
     constructor(
@@ -23,6 +22,11 @@ export class ProductController {
     @Get()
     async all(@Query('page') page = 1) {
         return this.productService.paginate(page);
+    }
+
+    @Get('show')
+    async show() {
+        return this.productService.all();
     }
 
     // Find specific product
@@ -84,21 +88,27 @@ export class ProductController {
     // Create Products
     @Post()
     async create(@Body() body: ProductCreateDto) {
-        return this.productService.create(body);
+        return this.productService.createImages(body);
     }
 
     // Get one products
     @Get(':id')
+    @UseGuards(AuthGuard)
     async get(@Param('id') id: string) {
         return this.productService.findOne({ id });
     }
 
     // Update Products
     @Put(':id')
+    @UseGuards(AuthGuard)
     async update(
         @Param('id') id: string,
         @Body() body: ProductUpdateDto
     ) {
+        const findImages = await this.productService.findProductImages({ productId: id });
+
+        await this.productService.deleteImages(findImages.productId);
+
         await this.productService.update(id, body);
 
         return this.productService.findOne({ id });
@@ -106,7 +116,17 @@ export class ProductController {
 
     // Delete Products
     @Delete(':id')
+    @UseGuards(AuthGuard)
     async delete(@Param('id') id: string) {
+        // Find the related images
+        const findImages = [await this.productService.findProductImages({ productId: id })];
+
+        // Delete the related images
+        for (const image of findImages) {
+            await this.productService.deleteImages(image.productId);
+        }
+
+        // Delete the product
         return this.productService.delete(id);
     }
 

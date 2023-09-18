@@ -18,13 +18,51 @@ const typeorm_1 = require("@nestjs/typeorm");
 const abstract_service_1 = require("../common/abstract.service");
 const typeorm_2 = require("typeorm");
 const product_entity_1 = require("./models/product.entity");
+const product_images_entity_1 = require("./models/product-images.entity");
 let ProductService = exports.ProductService = class ProductService extends abstract_service_1.AbstractService {
-    constructor(productRepository) {
+    constructor(productRepository, productImagesRepository) {
         super(productRepository);
         this.productRepository = productRepository;
+        this.productImagesRepository = productImagesRepository;
+    }
+    async findProductImages(options) {
+        return this.productImagesRepository.findOne({ where: options });
+    }
+    async deleteImages(productId) {
+        return this.productImagesRepository.delete({ productId });
+    }
+    async createImages(dto) {
+        const product = new product_entity_1.Product();
+        product.title = dto.title;
+        product.description = dto.description;
+        product.image = dto.image;
+        product.price = dto.price;
+        await this.productRepository.save(product);
+        for (const imageUrl of dto.images) {
+            const productImage = new product_images_entity_1.ProductImages();
+            productImage.productId = product.id;
+            productImage.image = imageUrl;
+            await this.productImagesRepository.save(productImage);
+        }
+        return product;
+    }
+    async update(id, dto) {
+        const product = new product_entity_1.Product();
+        product.title = dto.title;
+        product.description = dto.description;
+        product.image = dto.image;
+        product.price = dto.price;
+        await this.productRepository.update(id, product);
+        for (const imageUrl of dto.images) {
+            const productImage = new product_images_entity_1.ProductImages();
+            productImage.productId = id;
+            productImage.image = imageUrl;
+            await this.productImagesRepository.save(productImage);
+        }
+        return product;
     }
     async findProducts(search, page = 1) {
-        const take = 1;
+        const take = 12;
         const [products, total] = await this.productRepository
             .createQueryBuilder('product')
             .where('product.title ILIKE :search OR product.description ILIKE :search', { search: `%${search}%` })
@@ -44,6 +82,8 @@ let ProductService = exports.ProductService = class ProductService extends abstr
 exports.ProductService = ProductService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(product_entity_1.Product)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(product_images_entity_1.ProductImages)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], ProductService);
 //# sourceMappingURL=product.service.js.map
