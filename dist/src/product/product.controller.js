@@ -16,11 +16,40 @@ exports.ProductController = void 0;
 const common_1 = require("@nestjs/common");
 const product_service_1 = require("./product.service");
 const auth_guard_1 = require("../auth/auth.guard");
-const product_create_dto_1 = require("./models/product-create.dto");
-const product_update_dto_1 = require("./models/product-update.dto");
 const auth_service_1 = require("../auth/auth.service");
 const user_service_1 = require("../user/user.service");
 const order_service_1 = require("../order/order.service");
+const Joi = require("joi");
+const productCreate = Joi.object({
+    title: Joi.string().required().messages({
+        'string.empty': `"Title" is required`,
+    }),
+    description: Joi.string().required().messages({
+        'string.empty': `"Description" is required`,
+    }),
+    image: Joi.string().required().messages({
+        'string.empty': `"Image" is required`,
+    }),
+    price: Joi.number().required().messages({
+        'number.empty': `"Price" is required`,
+    }),
+    images: Joi.array().items(Joi.string().required().messages({
+        'string.empty': `"Images" is required`
+    })).min(1).messages({
+        'array.min': `"Images" must have at least one item`
+    })
+});
+const productUpdate = Joi.object({
+    title: Joi.string(),
+    description: Joi.string(),
+    image: Joi.string(),
+    price: Joi.number(),
+    images: Joi.array().items(Joi.string().required().messages({
+        'string.empty': `"Images" is required`,
+    })).min(1).messages({
+        'array.min': `"Images" must have at least one item`
+    })
+});
 let ProductController = exports.ProductController = class ProductController {
     constructor(productService, orderService, userService, authService) {
         this.productService = productService;
@@ -73,6 +102,10 @@ let ProductController = exports.ProductController = class ProductController {
         };
     }
     async create(body) {
+        const { error } = productCreate.validate(body);
+        if (error) {
+            throw new common_1.BadRequestException(error.message);
+        }
         return this.productService.createImages(body);
     }
     async get(id) {
@@ -80,7 +113,13 @@ let ProductController = exports.ProductController = class ProductController {
     }
     async update(id, body) {
         const findImages = await this.productService.findProductImages({ productId: id });
-        await this.productService.deleteImages(findImages.productId);
+        if (findImages) {
+            await this.productService.deleteImages(findImages.productId);
+        }
+        const { error } = productUpdate.validate(body);
+        if (error) {
+            throw new common_1.BadRequestException(error.message);
+        }
         await this.productService.update(id, body);
         return this.productService.findOne({ id });
     }
@@ -125,7 +164,7 @@ __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [product_create_dto_1.ProductCreateDto]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "create", null);
 __decorate([
@@ -142,7 +181,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, product_update_dto_1.ProductUpdateDto]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "update", null);
 __decorate([

@@ -4,5 +4,7 @@ export declare class Product {
     description: string;
     image: string;
     price: number;
+    created_at: string;
+    updated_at: string;
     addId(): void;
 }

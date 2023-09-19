@@ -25,15 +25,15 @@ export class ProductService extends AbstractService {
         return this.productImagesRepository.delete({ productId });
     }
 
-    async createImages(dto: ProductCreateDto): Promise<any> {
+    async createImages(data): Promise<any> {
         const product = new Product();
-        product.title = dto.title;
-        product.description = dto.description;
-        product.image = dto.image; // primary image of the product
-        product.price = dto.price;
+        product.title = data.title;
+        product.description = data.description;
+        product.image = data.image; // primary image of the product
+        product.price = data.price;
         await this.productRepository.save(product);
 
-        for (const imageUrl of dto.images) {
+        for (const imageUrl of data.images) {
             const productImage = new ProductImages();
             productImage.productId = product.id;
             productImage.image = imageUrl;
@@ -43,15 +43,15 @@ export class ProductService extends AbstractService {
         return product;
     }
 
-    async update(id: string, dto: ProductUpdateDto): Promise<any> {
+    async update(id: string, body): Promise<any> {
         const product = new Product();
-        product.title = dto.title;
-        product.description = dto.description;
-        product.image = dto.image; // primary image of the product
-        product.price = dto.price;
+        product.title = body.title;
+        product.description = body.description;
+        product.image = body.image; // primary image of the product
+        product.price = body.price;
         await this.productRepository.update(id, product);
 
-        for (const imageUrl of dto.images) {
+        for (const imageUrl of body.images) {
             const productImage = new ProductImages();
             productImage.productId = id;
             productImage.image = imageUrl;

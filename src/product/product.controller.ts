@@ -8,6 +8,39 @@ import { UserService } from 'src/user/user.service';
 import { Request } from 'express';
 import { OrderService } from 'src/order/order.service';
 import { Product } from './models/product.entity';
+import * as Joi from 'joi';
+
+const productCreate = Joi.object({
+    title: Joi.string().required().messages({
+        'string.empty': `"Title" is required`,
+    }),
+    description: Joi.string().required().messages({
+        'string.empty': `"Description" is required`,
+    }),
+    image: Joi.string().required().messages({
+        'string.empty': `"Image" is required`,
+    }),
+    price: Joi.number().required().messages({
+        'number.empty': `"Price" is required`,
+    }),
+    images: Joi.array().items(Joi.string().required().messages({
+        'string.empty': `"Images" is required`
+    })).min(1).messages({
+        'array.min': `"Images" must have at least one item`
+    })
+});
+
+const productUpdate = Joi.object({
+    title: Joi.string(),
+    description: Joi.string(),
+    image: Joi.string(),
+    price: Joi.number(),
+    images: Joi.array().items(Joi.string().required().messages({
+        'string.empty': `"Images" is required`,
+    })).min(1).messages({
+        'array.min': `"Images" must have at least one item`
+    })
+});
 
 @Controller('products')
 export class ProductController {
@@ -84,10 +117,16 @@ export class ProductController {
         };
     }
 
-
     // Create Products
     @Post()
-    async create(@Body() body: ProductCreateDto) {
+    async create(
+        @Body() body: any
+    ) {
+        const { error } = productCreate.validate(body);
+        if (error) {
+            throw new BadRequestException(error.message);
+        }
+
         return this.productService.createImages(body);
     }
 
@@ -103,11 +142,18 @@ export class ProductController {
     @UseGuards(AuthGuard)
     async update(
         @Param('id') id: string,
-        @Body() body: ProductUpdateDto
+        @Body() body: any
     ) {
         const findImages = await this.productService.findProductImages({ productId: id });
 
-        await this.productService.deleteImages(findImages.productId);
+        if (findImages) {
+            await this.productService.deleteImages(findImages.productId);
+        }
+
+        const { error } = productUpdate.validate(body);
+        if (error) {
+            throw new BadRequestException(error.message);
+        }
 
         await this.productService.update(id, body);
 

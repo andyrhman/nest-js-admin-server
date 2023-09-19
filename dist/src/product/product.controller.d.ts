@@ -1,6 +1,4 @@
 import { ProductService } from './product.service';
-import { ProductCreateDto } from './models/product-create.dto';
-import { ProductUpdateDto } from './models/product-update.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/user/user.service';
 import { Request } from 'express';
@@ -18,8 +16,8 @@ export declare class ProductController {
     test(request: Request, body: any): Promise<{
         message: string;
     }>;
-    create(body: ProductCreateDto): Promise<any>;
+    create(body: any): Promise<any>;
     get(id: string): Promise<any>;
-    update(id: string, body: ProductUpdateDto): Promise<any>;
+    update(id: string, body: any): Promise<any>;
     delete(id: string): Promise<any>;
 }

@@ -27,7 +27,14 @@ __decorate([
     __metadata("design:type", String)
 ], ProductCreateDto.prototype, "image", void 0);
 __decorate([
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNotEmpty)({
+        message: (args) => {
+            if (args.value.length === 0) {
+                return "Images array should not be empty";
+            }
+            return "Images is required";
+        },
+    }),
     __metadata("design:type", Array)
 ], ProductCreateDto.prototype, "images", void 0);
 __decorate([

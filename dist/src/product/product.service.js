@@ -31,14 +31,14 @@ let ProductService = exports.ProductService = class ProductService extends abstr
     async deleteImages(productId) {
         return this.productImagesRepository.delete({ productId });
     }
-    async createImages(dto) {
+    async createImages(data) {
         const product = new product_entity_1.Product();
-        product.title = dto.title;
-        product.description = dto.description;
-        product.image = dto.image;
-        product.price = dto.price;
+        product.title = data.title;
+        product.description = data.description;
+        product.image = data.image;
+        product.price = data.price;
         await this.productRepository.save(product);
-        for (const imageUrl of dto.images) {
+        for (const imageUrl of data.images) {
             const productImage = new product_images_entity_1.ProductImages();
             productImage.productId = product.id;
             productImage.image = imageUrl;
@@ -46,14 +46,14 @@ let ProductService = exports.ProductService = class ProductService extends abstr
         }
         return product;
     }
-    async update(id, dto) {
+    async update(id, body) {
         const product = new product_entity_1.Product();
-        product.title = dto.title;
-        product.description = dto.description;
-        product.image = dto.image;
-        product.price = dto.price;
+        product.title = body.title;
+        product.description = body.description;
+        product.image = body.image;
+        product.price = body.price;
         await this.productRepository.update(id, product);
-        for (const imageUrl of dto.images) {
+        for (const imageUrl of body.images) {
             const productImage = new product_images_entity_1.ProductImages();
             productImage.productId = id;
             productImage.image = imageUrl;
