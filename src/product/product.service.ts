@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AbstractService } from 'src/common/abstract.service';
 import { Repository } from 'typeorm';
 import { Product } from './models/product.entity';
 import { ProductImages } from './models/product-images.entity';
-import { ProductCreateDto } from './models/product-create.dto';
-import { ProductUpdateDto } from './models/product-update.dto';
+import slugify from 'slugify';
 
 @Injectable()
 export class ProductService extends AbstractService {
@@ -28,34 +27,53 @@ export class ProductService extends AbstractService {
     async createImages(data): Promise<any> {
         const product = new Product();
         product.title = data.title;
+        product.slug = slugify(data.title, {
+            lower: true,      // convert to lower case, defaults to `false`
+            strict: true,     // strip special characters except replacement, defaults to `false`
+            trim: true        // trim leading and trailing replacement chars, defaults to `true`.
+        });
         product.description = data.description;
         product.image = data.image; // primary image of the product
         product.price = data.price;
         await this.productRepository.save(product);
 
-        for (const imageUrl of data.images) {
-            const productImage = new ProductImages();
-            productImage.productId = product.id;
-            productImage.image = imageUrl;
-            await this.productImagesRepository.save(productImage);
+        if (Array.isArray(data.images)) {
+            for (const imageUrl of data.images) {
+                const productImage = new ProductImages();
+                productImage.productId = product.id;
+                productImage.image = imageUrl;
+                await this.productImagesRepository.save(productImage);
+            }
+        } else {
+            throw new BadRequestException("Images field is required and it should be an array");
         }
 
         return product;
     }
 
+
     async update(id: string, body): Promise<any> {
         const product = new Product();
         product.title = body.title;
+        product.slug = slugify(body.title, {
+            lower: true,      // convert to lower case, defaults to `false`
+            strict: true,     // strip special characters except replacement, defaults to `false`
+            trim: true        // trim leading and trailing replacement chars, defaults to `true`.
+        });
         product.description = body.description;
         product.image = body.image; // primary image of the product
         product.price = body.price;
         await this.productRepository.update(id, product);
 
-        for (const imageUrl of body.images) {
-            const productImage = new ProductImages();
-            productImage.productId = id;
-            productImage.image = imageUrl;
-            await this.productImagesRepository.save(productImage);
+        if (Array.isArray(body.images)) {
+            for (const imageUrl of body.images) {
+                const productImage = new ProductImages();
+                productImage.productId = id;
+                productImage.image = imageUrl;
+                await this.productImagesRepository.save(productImage);
+            }
+        } else {
+            throw new BadRequestException("Images field is required and it should be an array");
         }
 
         return product;

@@ -19,6 +19,7 @@ const abstract_service_1 = require("../common/abstract.service");
 const typeorm_2 = require("typeorm");
 const product_entity_1 = require("./models/product.entity");
 const product_images_entity_1 = require("./models/product-images.entity");
+const slugify_1 = require("slugify");
 let ProductService = exports.ProductService = class ProductService extends abstract_service_1.AbstractService {
     constructor(productRepository, productImagesRepository) {
         super(productRepository);
@@ -34,30 +35,50 @@ let ProductService = exports.ProductService = class ProductService extends abstr
     async createImages(data) {
         const product = new product_entity_1.Product();
         product.title = data.title;
+        product.slug = (0, slugify_1.default)(data.title, {
+            lower: true,
+            strict: true,
+            trim: true
+        });
         product.description = data.description;
         product.image = data.image;
         product.price = data.price;
         await this.productRepository.save(product);
-        for (const imageUrl of data.images) {
-            const productImage = new product_images_entity_1.ProductImages();
-            productImage.productId = product.id;
-            productImage.image = imageUrl;
-            await this.productImagesRepository.save(productImage);
+        if (Array.isArray(data.images)) {
+            for (const imageUrl of data.images) {
+                const productImage = new product_images_entity_1.ProductImages();
+                productImage.productId = product.id;
+                productImage.image = imageUrl;
+                await this.productImagesRepository.save(productImage);
+            }
+        }
+        else {
+            throw new common_1.BadRequestException("Images field is required and it should be an array");
         }
         return product;
     }
     async update(id, body) {
         const product = new product_entity_1.Product();
         product.title = body.title;
+        product.slug = (0, slugify_1.default)(body.title, {
+            lower: true,
+            strict: true,
+            trim: true
+        });
         product.description = body.description;
         product.image = body.image;
         product.price = body.price;
         await this.productRepository.update(id, product);
-        for (const imageUrl of body.images) {
-            const productImage = new product_images_entity_1.ProductImages();
-            productImage.productId = id;
-            productImage.image = imageUrl;
-            await this.productImagesRepository.save(productImage);
+        if (Array.isArray(body.images)) {
+            for (const imageUrl of body.images) {
+                const productImage = new product_images_entity_1.ProductImages();
+                productImage.productId = id;
+                productImage.image = imageUrl;
+                await this.productImagesRepository.save(productImage);
+            }
+        }
+        else {
+            throw new common_1.BadRequestException("Images field is required and it should be an array");
         }
         return product;
     }

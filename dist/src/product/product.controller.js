@@ -21,22 +21,22 @@ const user_service_1 = require("../user/user.service");
 const order_service_1 = require("../order/order.service");
 const Joi = require("joi");
 const productCreate = Joi.object({
-    title: Joi.string().required().messages({
-        'string.empty': `"Title" is required`,
+    title: Joi.string().required().error(() => {
+        return new Error("Title is required");
     }),
-    description: Joi.string().required().messages({
-        'string.empty': `"Description" is required`,
+    description: Joi.string().required().error(() => {
+        return new Error("Description is required");
     }),
-    image: Joi.string().required().messages({
-        'string.empty': `"Image" is required`,
+    image: Joi.string().required().error(() => {
+        return new Error("Image is required");
     }),
-    price: Joi.number().required().messages({
-        'number.empty': `"Price" is required`,
+    price: Joi.number().required().error(() => {
+        return new Error("Price is required");
     }),
     images: Joi.array().items(Joi.string().required().messages({
         'string.empty': `"Images" is required`
-    })).min(1).messages({
-        'array.min': `"Images" must have at least one item`
+    })).min(1).error(() => {
+        return new Error("Images must have at least one item");
     })
 });
 const productUpdate = Joi.object({
@@ -45,9 +45,9 @@ const productUpdate = Joi.object({
     image: Joi.string(),
     price: Joi.number(),
     images: Joi.array().items(Joi.string().required().messages({
-        'string.empty': `"Images" is required`,
-    })).min(1).messages({
-        'array.min': `"Images" must have at least one item`
+        'string.empty': `"Images" is required`
+    })).min(1).error(() => {
+        return new Error("Images must have at least one item");
     })
 });
 let ProductController = exports.ProductController = class ProductController {

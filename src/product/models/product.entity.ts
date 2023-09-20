@@ -10,6 +10,9 @@ export class Product{
     title: string;
 
     @Column()
+    slug: string;
+
+    @Column()
     description: string;
 
     @Column()
