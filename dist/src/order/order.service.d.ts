@@ -7,6 +7,7 @@ export declare class OrderService extends AbstractService {
     private readonly orderRepository;
     private readonly orderItemRepository;
     constructor(orderRepository: Repository<Order>, orderItemRepository: Repository<OrderItem>);
+    findOne(options: any, relations?: any[]): Promise<any>;
     paginate(page?: number, relations?: any[]): Promise<PaginatedResult>;
     chart(): Promise<any[]>;
     createOrders(data: any): Promise<any>;

@@ -59,7 +59,7 @@ export class ProductController {
 
     @Get('show')
     async show() {
-        return this.productService.all();
+        return this.productService.all(['product_images']);
     }
 
     // Find specific product
@@ -80,11 +80,16 @@ export class ProductController {
     }
 
     @Post('order-products')
+    @UseGuards(AuthGuard)
     async test(
         @Req() request: Request,
         @Body() body: any
     ) {
         const { id, quantity } = body;
+
+        if (!quantity) {
+            throw new BadRequestException("Please insert quantity")
+        }
 
         const userId = await this.authService.userId(request);
 
@@ -99,16 +104,18 @@ export class ProductController {
                 product_title: productData.title,
                 price: productData.price,
                 quantity: quantity,
-                order: exstingOrder.id
+                order: exstingOrder.id,
+                product_id: productData.id
             });
         } else if (!exstingOrder) {
             await this.orderService.createOrders({
                 name: user.username,
                 email: user.email,
+                userId: userId,
                 product_title: productData.title,
                 price: productData.price,
                 quantity: quantity,
-                userId: userId
+                product_id: productData.id
             });
         }
 
@@ -131,10 +138,9 @@ export class ProductController {
     }
 
     // Get one products
-    @Get(':id')
-    @UseGuards(AuthGuard)
-    async get(@Param('id') id: string) {
-        return this.productService.findOne({ id });
+    @Get(':slug')
+    async get(@Param('slug') slug: string) {
+        return this.productService.findOne({ slug }, ['product_images']);
     }
 
     // Update Products

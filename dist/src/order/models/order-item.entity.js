@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderItem = exports.OrderItemStatus = void 0;
 const typeorm_1 = require("typeorm");
 const order_entity_1 = require("./order.entity");
+const product_entity_1 = require("../../product/models/product.entity");
 var OrderItemStatus;
 (function (OrderItemStatus) {
     OrderItemStatus["SedangDikemas"] = "Sedang Dikemas";
@@ -45,10 +46,19 @@ __decorate([
     __metadata("design:type", String)
 ], OrderItem.prototype, "status", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: "product_id" }),
+    __metadata("design:type", String)
+], OrderItem.prototype, "product_id", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => order_entity_1.Order, order => order.order_items),
     (0, typeorm_1.JoinColumn)({ name: 'order_id' }),
     __metadata("design:type", order_entity_1.Order)
 ], OrderItem.prototype, "order", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => product_entity_1.Product, product => product.order_items),
+    (0, typeorm_1.JoinColumn)({ name: 'product_id' }),
+    __metadata("design:type", product_entity_1.Product)
+], OrderItem.prototype, "product", void 0);
 exports.OrderItem = OrderItem = __decorate([
     (0, typeorm_1.Entity)('order_items')
 ], OrderItem);

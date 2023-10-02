@@ -17,7 +17,7 @@ export declare class ProductController {
         message: string;
     }>;
     create(body: any): Promise<any>;
-    get(id: string): Promise<any>;
+    get(slug: string): Promise<any>;
     update(id: string, body: any): Promise<any>;
     delete(id: string): Promise<any>;
 }

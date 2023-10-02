@@ -9,4 +9,5 @@ export declare class Order {
     order_items: OrderItem[];
     user: User;
     get total(): number;
+    get total_orders(): number;
 }

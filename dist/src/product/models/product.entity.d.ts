@@ -1,3 +1,5 @@
+import { ProductImages } from "./product-images.entity";
+import { OrderItem } from "src/order/models/order-item.entity";
 export declare class Product {
     id: string;
     title: string;
@@ -8,4 +10,6 @@ export declare class Product {
     created_at: string;
     updated_at: string;
     addId(): void;
+    product_images: ProductImages[];
+    order_items: OrderItem[];
 }

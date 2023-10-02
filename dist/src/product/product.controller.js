@@ -61,7 +61,7 @@ let ProductController = exports.ProductController = class ProductController {
         return this.productService.paginate(page);
     }
     async show() {
-        return this.productService.all();
+        return this.productService.all(['product_images']);
     }
     async findUsers(search, page = 1) {
         if (/[<>]/.test(search)) {
@@ -75,6 +75,9 @@ let ProductController = exports.ProductController = class ProductController {
     }
     async test(request, body) {
         const { id, quantity } = body;
+        if (!quantity) {
+            throw new common_1.BadRequestException("Please insert quantity");
+        }
         const userId = await this.authService.userId(request);
         const user = await this.userService.findOne({ id: userId });
         const productData = await this.productService.findOne({ id: id });
@@ -84,17 +87,19 @@ let ProductController = exports.ProductController = class ProductController {
                 product_title: productData.title,
                 price: productData.price,
                 quantity: quantity,
-                order: exstingOrder.id
+                order: exstingOrder.id,
+                product_id: productData.id
             });
         }
         else if (!exstingOrder) {
             await this.orderService.createOrders({
                 name: user.username,
                 email: user.email,
+                userId: userId,
                 product_title: productData.title,
                 price: productData.price,
                 quantity: quantity,
-                userId: userId
+                product_id: productData.id
             });
         }
         return {
@@ -108,8 +113,8 @@ let ProductController = exports.ProductController = class ProductController {
         }
         return this.productService.createImages(body);
     }
-    async get(id) {
-        return this.productService.findOne({ id });
+    async get(slug) {
+        return this.productService.findOne({ slug }, ['product_images']);
     }
     async update(id, body) {
         const findImages = await this.productService.findProductImages({ productId: id });
@@ -154,6 +159,7 @@ __decorate([
 ], ProductController.prototype, "findUsers", null);
 __decorate([
     (0, common_1.Post)('order-products'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -168,9 +174,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)(':slug'),
+    __param(0, (0, common_1.Param)('slug')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)

@@ -25,6 +25,10 @@ let OrderService = exports.OrderService = class OrderService extends abstract_se
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
     }
+    async findOne(options, relations = []) {
+        relations.push('order_items.product');
+        return this.repository.findOne({ where: options, relations });
+    }
     async paginate(page = 1, relations = []) {
         const { data, meta } = await super.paginate(page, relations);
         return {
@@ -63,6 +67,7 @@ let OrderService = exports.OrderService = class OrderService extends abstract_se
         orderItem.price = data.price;
         orderItem.quantity = data.quantity;
         orderItem.order = order;
+        orderItem.product_id = data.product_id;
         await this.orderItemRepository.save(orderItem);
     }
     async createOrderItem(data) {
@@ -71,6 +76,7 @@ let OrderService = exports.OrderService = class OrderService extends abstract_se
         orderItem.price = data.price;
         orderItem.quantity = data.quantity;
         orderItem.order = data.order;
+        orderItem.product_id = data.product_id;
         await this.orderItemRepository.save(orderItem);
     }
     async updateStatus(id, data) {

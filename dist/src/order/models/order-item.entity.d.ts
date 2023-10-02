@@ -1,4 +1,5 @@
 import { Order } from "./order.entity";
+import { Product } from "src/product/models/product.entity";
 export declare enum OrderItemStatus {
     SedangDikemas = "Sedang Dikemas",
     Dikirim = "Dikirim",
@@ -10,5 +11,7 @@ export declare class OrderItem {
     price: number;
     quantity: number;
     status: OrderItemStatus;
+    product_id: string;
     order: Order;
+    product: Product;
 }

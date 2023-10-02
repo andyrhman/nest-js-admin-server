@@ -51,14 +51,13 @@ export class ProductService extends AbstractService {
         return product;
     }
 
-
     async update(id: string, body): Promise<any> {
         const product = new Product();
         product.title = body.title;
         product.slug = slugify(body.title, {
             lower: true,      // convert to lower case, defaults to `false`
             strict: true,     // strip special characters except replacement, defaults to `false`
-            trim: true        // trim leading and trailing replacement chars, defaults to `true`.
+            trim: true        // trim leading and trailing replacement chars, defaults to `true`
         });
         product.description = body.description;
         product.image = body.image; // primary image of the product

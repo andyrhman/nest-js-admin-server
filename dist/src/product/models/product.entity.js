@@ -12,6 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Product = void 0;
 const typeorm_1 = require("typeorm");
 const uuid_1 = require("uuid");
+const product_images_entity_1 = require("./product-images.entity");
+const order_item_entity_1 = require("../../order/models/order-item.entity");
 let Product = exports.Product = class Product {
     addId() {
         if (!this.id) {
@@ -57,6 +59,14 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], Product.prototype, "addId", null);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => product_images_entity_1.ProductImages, productImages => productImages.product),
+    __metadata("design:type", Array)
+], Product.prototype, "product_images", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => order_item_entity_1.OrderItem, orderItem => orderItem.product),
+    __metadata("design:type", Array)
+], Product.prototype, "order_items", void 0);
 exports.Product = Product = __decorate([
     (0, typeorm_1.Entity)('products')
 ], Product);

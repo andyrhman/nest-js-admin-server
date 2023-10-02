@@ -18,7 +18,7 @@ export class Order {
     created_at: string;
 
     @Column({ name: 'user_id' })  // Explicit column for the foreign key
-    userId: string;  
+    userId: string;
 
     // Order (one) to orders_item (many) relationship
     // That means One order has many order_items
@@ -26,7 +26,7 @@ export class Order {
     order_items: OrderItem[];
 
     @OneToOne(() => User)
-    @JoinColumn({name: "user_id"})
+    @JoinColumn({ name: "user_id" })
     user: User;
 
     // Getting the total price
@@ -34,5 +34,12 @@ export class Order {
     get total(): number {
         return this.order_items.reduce((sum, i) => sum + i.quantity * i.price, 0);
     }
+
+    // * Total order items
+    @Expose()
+    get total_orders(): number {
+        return this.order_items.length;
+    }
+
 
 }

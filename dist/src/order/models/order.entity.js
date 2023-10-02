@@ -18,6 +18,9 @@ let Order = exports.Order = class Order {
     get total() {
         return this.order_items.reduce((sum, i) => sum + i.quantity * i.price, 0);
     }
+    get total_orders() {
+        return this.order_items.length;
+    }
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
@@ -53,6 +56,11 @@ __decorate([
     __metadata("design:type", Number),
     __metadata("design:paramtypes", [])
 ], Order.prototype, "total", null);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", Number),
+    __metadata("design:paramtypes", [])
+], Order.prototype, "total_orders", null);
 exports.Order = Order = __decorate([
     (0, typeorm_1.Entity)('orders')
 ], Order);

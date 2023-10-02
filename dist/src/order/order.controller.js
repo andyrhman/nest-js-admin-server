@@ -19,9 +19,11 @@ const auth_guard_1 = require("../auth/auth.guard");
 const json2csv_1 = require("json2csv");
 const order_item_entity_1 = require("./models/order-item.entity");
 const permission_decorator_1 = require("../permission/decorator/permission.decorator");
+const auth_service_1 = require("../auth/auth.service");
 let OrderController = exports.OrderController = class OrderController {
-    constructor(orderService) {
+    constructor(orderService, authService) {
         this.orderService = orderService;
+        this.authService = authService;
     }
     async all(page = 1) {
         return this.orderService.paginate(page, ['order_items']);
@@ -40,8 +42,9 @@ let OrderController = exports.OrderController = class OrderController {
             message: "Updated successfully"
         };
     }
-    async get(id) {
-        return this.orderService.findOneOrderItem({ id });
+    async get(request) {
+        const id = await this.authService.userId(request);
+        return this.orderService.findOne({ userId: id }, ['order_items']);
     }
     async findUsers(search, page = 1) {
         if (/[<>]/.test(search)) {
@@ -104,10 +107,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "status", null);
 __decorate([
-    (0, common_1.Get)('/orders/:id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)('/order-user'),
+    __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "get", null);
 __decorate([
@@ -137,6 +140,7 @@ exports.OrderController = OrderController = __decorate([
     (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [order_service_1.OrderService])
+    __metadata("design:paramtypes", [order_service_1.OrderService,
+        auth_service_1.AuthService])
 ], OrderController);
 //# sourceMappingURL=order.controller.js.map

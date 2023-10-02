@@ -5,10 +5,12 @@ import { CommonModule } from 'src/common/common.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from './models/order.entity';
 import { OrderItem } from './models/order-item.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
     CommonModule,
+    AuthModule,
     TypeOrmModule.forFeature([Order, OrderItem])
   ],
   controllers: [OrderController],
