@@ -99,6 +99,9 @@ let ProductService = exports.ProductService = class ProductService extends abstr
             }
         };
     }
+    async all(relations = [], order = {}) {
+        return await this.repository.find({ relations, order });
+    }
 };
 exports.ProductService = ProductService = __decorate([
     (0, common_1.Injectable)(),

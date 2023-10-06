@@ -60,8 +60,18 @@ let ProductController = exports.ProductController = class ProductController {
     async all(page = 1) {
         return this.productService.paginate(page);
     }
-    async show() {
-        return this.productService.all(['product_images']);
+    async show(search, sortBy, order) {
+        let orderObject = {};
+        if (sortBy === 'price' || sortBy === 'created_at') {
+            orderObject = { [sortBy]: order === 'ASC' ? 'DESC' : 'ASC' };
+        }
+        let products = await this.productService.all(['product_images'], orderObject);
+        if (search) {
+            search = search.toString().toLowerCase();
+            products = products.filter(p => p.title.toLowerCase().indexOf(search) >= 0 ||
+                p.description.toLowerCase().indexOf(search) >= 0);
+        }
+        return products;
     }
     async findUsers(search, page = 1) {
         if (/[<>]/.test(search)) {
@@ -145,8 +155,11 @@ __decorate([
 ], ProductController.prototype, "all", null);
 __decorate([
     (0, common_1.Get)('show'),
+    __param(0, (0, common_1.Query)('search')),
+    __param(1, (0, common_1.Query)('sortBy')),
+    __param(2, (0, common_1.Query)('order')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "show", null);
 __decorate([

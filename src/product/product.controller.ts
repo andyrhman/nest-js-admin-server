@@ -58,9 +58,31 @@ export class ProductController {
     }
 
     @Get('show')
-    async show() {
-        return this.productService.all(['product_images']);
+    async show(
+        @Query('search') search: string,
+        @Query('sortBy') sortBy: string,
+        @Query('order') order: 'ASC' | 'DESC',
+    ) {
+        // * Code Reference
+        // * https://www.phind.com/search?cache=zhrcces4sciikmbjwxhybn0r
+
+        let orderObject = {};
+        if (sortBy === 'price' || sortBy === 'created_at') {
+            orderObject = {[sortBy]: order === 'ASC' ? 'DESC' : 'ASC'};
+        }
+        let products = await this.productService.all(['product_images'], orderObject);
+    
+        // * Search Products code here
+        if (search) {
+            search = search.toString().toLowerCase();
+            products = products.filter(
+                p => p.title.toLowerCase().indexOf(search) >= 0 ||
+                p.description.toLowerCase().indexOf(search) >= 0
+            )
+        }
+        return products;
     }
+    
 
     // Find specific product
     @Get('product')
