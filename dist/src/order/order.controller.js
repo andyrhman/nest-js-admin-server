@@ -44,7 +44,7 @@ let OrderController = exports.OrderController = class OrderController {
     }
     async get(request) {
         const id = await this.authService.userId(request);
-        return this.orderService.findOne({ userId: id }, ['order_items']);
+        return this.orderService.findOne({ userId: id }, ['order_items', 'order_items.product']);
     }
     async findUsers(search, page = 1) {
         if (/[<>]/.test(search)) {

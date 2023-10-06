@@ -25,10 +25,6 @@ let OrderService = exports.OrderService = class OrderService extends abstract_se
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
     }
-    async findOne(options, relations = []) {
-        relations.push('order_items.product');
-        return this.repository.findOne({ where: options, relations });
-    }
     async paginate(page = 1, relations = []) {
         const { data, meta } = await super.paginate(page, relations);
         return {

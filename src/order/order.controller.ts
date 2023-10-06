@@ -64,7 +64,7 @@ export class OrderController {
     ) {
         const id = await this.authService.userId(request);
 
-        return this.orderService.findOne({ userId: id }, ['order_items']);
+        return this.orderService.findOne({ userId: id }, ['order_items', 'order_items.product']);
     }
 
 

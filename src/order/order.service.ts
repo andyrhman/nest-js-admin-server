@@ -15,11 +15,11 @@ export class OrderService extends AbstractService {
         super(orderRepository);
     }
 
-    async findOne(options, relations = []) {
-        // Add 'order_items.product' to the relations array
-        relations.push('order_items.product');
-        return this.repository.findOne({ where: options, relations });
-    }    
+    // async findOne(options, relations = []) {
+    //     // Add 'order_items.product' to the relations array
+    //     relations.push('order_items.product');
+    //     return this.repository.findOne({ where: options, relations });
+    // }    
 
     async paginate(page = 1, relations = []): Promise<PaginatedResult> {
         const { data, meta } = await super.paginate(page, relations);
