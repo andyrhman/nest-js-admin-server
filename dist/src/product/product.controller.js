@@ -60,18 +60,44 @@ let ProductController = exports.ProductController = class ProductController {
     async all(page = 1) {
         return this.productService.paginate(page);
     }
-    async show(search, sortBy, order) {
-        let orderObject = {};
-        if (sortBy === 'price' || sortBy === 'created_at') {
-            orderObject = { [sortBy]: order === 'ASC' ? 'DESC' : 'ASC' };
-        }
-        let products = await this.productService.all(['product_images'], orderObject);
-        if (search) {
-            search = search.toString().toLowerCase();
+    async show(request) {
+        let products = await this.productService.all(['product_images']);
+        if (request.query.search) {
+            const search = request.query.search.toString().toLowerCase();
             products = products.filter(p => p.title.toLowerCase().indexOf(search) >= 0 ||
                 p.description.toLowerCase().indexOf(search) >= 0);
         }
-        return products;
+        if (request.query.sort) {
+            if (request.query.sort === 'asc' || request.query.sort === 'desc') {
+                products.sort((a, b) => {
+                    const diff = a.price - b.price;
+                    if (diff === 0)
+                        return 0;
+                    const sign = Math.abs(diff) / diff;
+                    return request.query.sort === 'asc' ? -sign : sign;
+                });
+            }
+            else if (request.query.sort === 'newest' || request.query.sort === 'oldest') {
+                products.sort((a, b) => {
+                    if (request.query.sort === 'newest') {
+                        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+                    }
+                    else {
+                        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                    }
+                });
+            }
+        }
+        const page = parseInt(request.query.page) || 1;
+        const perPage = 9;
+        const total = products.length;
+        const data = products.slice((page - 1) * perPage, page * perPage);
+        return {
+            data,
+            total,
+            page,
+            last_page: Math.ceil(total / perPage)
+        };
     }
     async findUsers(search, page = 1) {
         if (/[<>]/.test(search)) {
@@ -155,11 +181,9 @@ __decorate([
 ], ProductController.prototype, "all", null);
 __decorate([
     (0, common_1.Get)('show'),
-    __param(0, (0, common_1.Query)('search')),
-    __param(1, (0, common_1.Query)('sortBy')),
-    __param(2, (0, common_1.Query)('order')),
+    __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "show", null);
 __decorate([

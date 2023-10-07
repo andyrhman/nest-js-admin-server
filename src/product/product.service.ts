@@ -98,7 +98,7 @@ export class ProductService extends AbstractService {
         }
     }
 
-    async all(relations = [], order = {}): Promise<Product[]> {
-        return await this.repository.find({relations, order});
+    async all(relations = []): Promise<Product[]> {
+        return await this.repository.find({relations});
     }
 }

@@ -59,30 +59,58 @@ export class ProductController {
 
     @Get('show')
     async show(
-        @Query('search') search: string,
-        @Query('sortBy') sortBy: string,
-        @Query('order') order: 'ASC' | 'DESC',
+        @Req() request: Request,
     ) {
-        // * Code Reference
-        // * https://www.phind.com/search?cache=zhrcces4sciikmbjwxhybn0r
+        let products = await this.productService.all(['product_images']);
 
-        let orderObject = {};
-        if (sortBy === 'price' || sortBy === 'created_at') {
-            orderObject = {[sortBy]: order === 'ASC' ? 'DESC' : 'ASC'};
-        }
-        let products = await this.productService.all(['product_images'], orderObject);
-    
-        // * Search Products code here
-        if (search) {
-            search = search.toString().toLowerCase();
+        // * Search products
+        if (request.query.search) {
+            const search = request.query.search.toString().toLowerCase();
             products = products.filter(
                 p => p.title.toLowerCase().indexOf(search) >= 0 ||
-                p.description.toLowerCase().indexOf(search) >= 0
+                    p.description.toLowerCase().indexOf(search) >= 0
             )
         }
-        return products;
+
+        // * Sorting the products
+        // ? https://www.phind.com/search?cache=zlbictz9gfz8dknex045rzeb
+        if (request.query.sort) {
+            if (request.query.sort === 'asc' || request.query.sort === 'desc') {
+                products.sort((a, b) => {
+                    const diff = a.price - b.price;
+
+                    if (diff === 0) return 0;
+
+                    const sign = Math.abs(diff) / diff;
+
+                    return request.query.sort === 'asc' ? -sign : sign;
+                })
+            } else if (request.query.sort === 'newest' || request.query.sort === 'oldest') {
+                products.sort((a, b) => {
+                    if (request.query.sort === 'newest') {
+                        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+                    } else {
+                        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                    }
+                });
+            }
+        }
+
+        // * Paginating products
+        const page: number = parseInt(request.query.page as any) || 1;
+        const perPage = 9;
+        const total = products.length;
+
+        const data = products.slice((page - 1) * perPage, page * perPage)
+
+        return {
+            data,
+            total,
+            page,
+            last_page: Math.ceil(total / perPage)
+        };
     }
-    
+
 
     // Find specific product
     @Get('product')

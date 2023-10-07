@@ -11,5 +11,5 @@ export declare class ProductService extends AbstractService {
     createImages(data: any): Promise<any>;
     update(id: string, body: any): Promise<any>;
     findProducts(search: string, page?: number): Promise<any>;
-    all(relations?: any[], order?: {}): Promise<Product[]>;
+    all(relations?: any[]): Promise<Product[]>;
 }

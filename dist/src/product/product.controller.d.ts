@@ -11,7 +11,12 @@ export declare class ProductController {
     private authService;
     constructor(productService: ProductService, orderService: OrderService, userService: UserService, authService: AuthService);
     all(page?: number): Promise<import("../common/paginated-result.interface").PaginatedResult>;
-    show(search: string, sortBy: string, order: 'ASC' | 'DESC'): Promise<Product[]>;
+    show(request: Request): Promise<{
+        data: Product[];
+        total: number;
+        page: number;
+        last_page: number;
+    }>;
     findUsers(search: string, page?: number): Promise<Product[]>;
     test(request: Request, body: any): Promise<{
         message: string;

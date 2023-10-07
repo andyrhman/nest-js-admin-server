@@ -99,8 +99,8 @@ let ProductService = exports.ProductService = class ProductService extends abstr
             }
         };
     }
-    async all(relations = [], order = {}) {
-        return await this.repository.find({ relations, order });
+    async all(relations = []) {
+        return await this.repository.find({ relations });
     }
 };
 exports.ProductService = ProductService = __decorate([
