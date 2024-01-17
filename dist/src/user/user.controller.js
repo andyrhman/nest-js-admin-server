@@ -17,221 +17,38 @@ const common_1 = require("@nestjs/common");
 const user_service_1 = require("./user.service");
 const argon2 = require("argon2");
 const user_create_dto_1 = require("./models/user-create.dto");
-const auth_guard_1 = require("../auth/auth.guard");
-const class_validator_1 = require("class-validator");
-const role_service_1 = require("../role/role.service");
-const auth_service_1 = require("../auth/auth.service");
-const permission_decorator_1 = require("../permission/decorator/permission.decorator");
 let UserController = exports.UserController = class UserController {
-    constructor(userService, roleService, authService) {
+    constructor(userService) {
         this.userService = userService;
-        this.roleService = roleService;
-        this.authService = authService;
     }
-    async findUsers(search, page = 1) {
-        if (/[<>]/.test(search)) {
-            throw new common_1.BadRequestException("Invalid user input");
+    async create(body, response) {
+        const hashedPassword = await argon2.hash('123456');
+        const emailExists = await this.userService.findOne({ email: body.email.toLowerCase() });
+        const usernameExists = await this.userService.findOne({ username: body.username.toLowerCase() });
+        if (emailExists || usernameExists) {
+            throw new common_1.BadRequestException('Email or username already exists');
         }
-        const users = await this.userService.findUsersByUsernameOrEmail(search, page);
-        if (users.length === 0) {
-            throw new common_1.NotFoundException(`Can't find any results for your search: ${search}`);
-        }
-        return users;
-    }
-    async findUsersRegister(search) {
-        if (/[<>]/.test(search)) {
-            throw new common_1.BadRequestException("Invalid user input");
-        }
-        const users = await this.userService.findUsersRegister(search);
-        if (users.length === 0) {
-            throw new common_1.NotFoundException(`Can't find any results for your search: ${search}`);
-        }
-        return users;
-    }
-    async all(page = 1) {
-        return await this.userService.paginate(page, ['role']);
-    }
-    async create(body) {
-        const password = await argon2.hash('123456');
-        const existingUser = await this.userService.findByUsernameOrEmail(body.username, body.email);
-        if (existingUser) {
-            throw new common_1.BadRequestException('Username or email already exists');
-        }
-        return this.userService.create({
+        const user = await this.userService.create({
+            fullName: body.fullname,
             username: body.username,
             email: body.email,
-            password,
-            role: { id: body.role_id }
+            password: hashedPassword,
         });
-    }
-    async get(id) {
-        if (!(0, class_validator_1.isUUID)(id)) {
-            throw new common_1.BadRequestException('Invalid UUID format');
-        }
-        const search = await this.userService.findOne({ id }, ['role']);
-        if (!search) {
-            throw new common_1.NotFoundException('User not found');
-        }
-        return search;
-    }
-    async updateInfo(request, body) {
-        const id = await this.authService.userId(request);
-        const existingUser = await this.userService.findOne({ id });
-        if (!existingUser) {
-            throw new common_1.NotFoundException('User not found');
-        }
-        if (body.email && body.email !== existingUser.email) {
-            const existingUserByEmail = await this.userService.findByEmail(body.email);
-            if (existingUserByEmail) {
-                throw new common_1.ConflictException('Email already exists');
-            }
-            existingUser.email = body.email;
-        }
-        if (body.username && body.username !== existingUser.username) {
-            const existingUserByUsername = await this.userService.findByUsername(body.username);
-            if (existingUserByUsername) {
-                throw new common_1.ConflictException('Username already exists');
-            }
-            existingUser.username = body.username;
-        }
-        await this.userService.update(id, existingUser);
-        return this.userService.findOne({ id });
-    }
-    async updatePassword(request, body) {
-        if (body.password !== body.confirm_password) {
-            throw new common_1.BadRequestException("Password do not match.");
-        }
-        const id = await this.authService.userId(request);
-        const hashPassword = await argon2.hash(body.password);
-        await this.userService.update(id, {
-            password: hashPassword
-        });
-        return this.userService.findOne({ id });
-    }
-    async update(id, body) {
-        if (!(0, class_validator_1.isUUID)(id)) {
-            throw new common_1.BadRequestException('Invalid UUID format');
-        }
-        const existingUser = await this.userService.findOne({ id });
-        if (!existingUser) {
-            throw new common_1.NotFoundException('User not found');
-        }
-        const { username, email, role_id } = body;
-        if (username && username !== existingUser.username) {
-            const existingUsername = await this.userService.findByUsername(username);
-            if (existingUsername) {
-                throw new common_1.BadRequestException('Username already exists');
-            }
-            existingUser.username = username;
-        }
-        if (email && email !== existingUser.email) {
-            const existingEmail = await this.userService.findByEmail(email);
-            if (existingEmail) {
-                throw new common_1.BadRequestException('Email already exists');
-            }
-            existingUser.email = email;
-        }
-        if (role_id) {
-            const role = await this.roleService.findOne({ id: role_id });
-            if (!role) {
-                throw new common_1.NotFoundException('Role not found');
-            }
-            existingUser.role = role;
-        }
-        await this.userService.update(id, existingUser);
-        return this.userService.findOne({ id });
-    }
-    async delete(id) {
-        await this.userService.delete(id);
-        return {
-            message: "User deleted sucessfully"
-        };
+        const { password, ...data } = user.toObject();
+        response.status(201);
+        return data;
     }
 };
 __decorate([
-    (0, common_1.Get)('user'),
-    __param(0, (0, common_1.Query)('search')),
-    __param(1, (0, common_1.Query)('page')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "findUsers", null);
-__decorate([
-    (0, common_1.Get)('userf'),
-    __param(0, (0, common_1.Query)('search')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "findUsersRegister", null);
-__decorate([
-    (0, common_1.Get)(),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    (0, permission_decorator_1.HasPermission)('users'),
-    __param(0, (0, common_1.Query)('page')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "all", null);
-__decorate([
     (0, common_1.Post)(),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    (0, permission_decorator_1.HasPermission)('users'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_create_dto_1.UserCreateDto]),
+    __metadata("design:paramtypes", [user_create_dto_1.UserCreateDto, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "create", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    (0, permission_decorator_1.HasPermission)('users'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "get", null);
-__decorate([
-    (0, common_1.Put)('info'),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "updateInfo", null);
-__decorate([
-    (0, common_1.Put)('password'),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "updatePassword", null);
-__decorate([
-    (0, common_1.Put)(':id'),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    (0, permission_decorator_1.HasPermission)('users'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    (0, permission_decorator_1.HasPermission)('users'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "delete", null);
 exports.UserController = UserController = __decorate([
-    (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),
     (0, common_1.Controller)('users'),
-    __metadata("design:paramtypes", [user_service_1.UserService,
-        role_service_1.RoleService,
-        auth_service_1.AuthService])
+    __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

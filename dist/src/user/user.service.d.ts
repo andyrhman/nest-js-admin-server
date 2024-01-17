@@ -1,10 +1,12 @@
-import { User } from './models/user.entity';
-import { Repository } from 'typeorm';
-import { AbstractService } from 'src/common/abstract.service';
-export declare class UserService extends AbstractService {
-    private readonly userRepository;
-    constructor(userRepository: Repository<User>);
-    paginate(page?: number, relations?: any[]): Promise<any>;
-    findUsersByUsernameOrEmail(search: string, page?: number): Promise<any>;
-    findUsersRegister(search: string): Promise<User[]>;
+import { Model } from 'mongoose';
+import { User } from './models/user.schema';
+export declare class UserService {
+    private userModel;
+    constructor(userModel: Model<User>);
+    create(createUserDto: any): Promise<User>;
+    findAll(): Promise<User[]>;
+    findOne(options: any): Promise<User | null>;
+    findById(id: string): Promise<User | null>;
+    update(id: string, updateUserDto: any): Promise<User | null>;
+    delete(id: string): Promise<User | null>;
 }

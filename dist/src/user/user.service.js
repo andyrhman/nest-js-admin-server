@@ -14,65 +14,35 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
-const typeorm_1 = require("@nestjs/typeorm");
-const user_entity_1 = require("./models/user.entity");
-const typeorm_2 = require("typeorm");
-const abstract_service_1 = require("../common/abstract.service");
-let UserService = exports.UserService = class UserService extends abstract_service_1.AbstractService {
-    constructor(userRepository) {
-        super(userRepository);
-        this.userRepository = userRepository;
+const mongoose_1 = require("@nestjs/mongoose");
+const mongoose_2 = require("mongoose");
+let UserService = exports.UserService = class UserService {
+    constructor(userModel) {
+        this.userModel = userModel;
     }
-    async paginate(page = 1, relations = []) {
-        const take = 1;
-        const [users, total] = await this.userRepository.findAndCount({
-            take,
-            skip: (page - 1) * take,
-            relations
-        });
-        return {
-            data: users.map(user => {
-                const { password, ...data } = user;
-                return data;
-            }),
-            meta: {
-                total,
-                page,
-                last_page: Math.ceil(total / take)
-            }
-        };
+    async create(createUserDto) {
+        const newUser = new this.userModel(createUserDto);
+        return newUser.save();
     }
-    async findUsersByUsernameOrEmail(search, page = 1) {
-        const take = 1;
-        const [users, total] = await this.userRepository
-            .createQueryBuilder('user')
-            .leftJoinAndSelect('user.role', 'role')
-            .where('user.username ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` })
-            .skip((page - 1) * take)
-            .take(take)
-            .getManyAndCount();
-        return {
-            data: users.map(user => {
-                const { password, ...data } = user;
-                return data;
-            }),
-            meta: {
-                total,
-                page,
-                last_page: Math.ceil(total / take)
-            }
-        };
+    async findAll() {
+        return this.userModel.find().exec();
     }
-    async findUsersRegister(search) {
-        return this.userRepository
-            .createQueryBuilder('user')
-            .where('user.username ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` })
-            .getMany();
+    async findOne(options) {
+        return this.userModel.findOne(options).exec();
+    }
+    async findById(id) {
+        return this.userModel.findById(id).exec();
+    }
+    async update(id, updateUserDto) {
+        return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
+    }
+    async delete(id) {
+        return this.userModel.findByIdAndDelete(id).exec();
     }
 };
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(0, (0, mongoose_1.InjectModel)('User')),
+    __metadata("design:paramtypes", [mongoose_2.Model])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

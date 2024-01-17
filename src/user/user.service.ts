@@ -1,73 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './models/user.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User } from './models/user.schema';
 import { Repository } from 'typeorm';
-import { AbstractService } from 'src/common/abstract.service';
+// import { AbstractService } from 'src/common/abstract.service';
 import { PaginatedResult } from 'src/common/paginated-result.interface';
 
 @Injectable()
-export class UserService extends AbstractService {
-    constructor(
-        @InjectRepository(User) private readonly userRepository: Repository<User>
-    ) {
-        super(userRepository);
+export class UserService {
+    constructor(@InjectModel('User') private userModel: Model<User>) { }
+
+    async create(createUserDto: any): Promise<User> {
+        const newUser = new this.userModel(createUserDto);
+        return newUser.save();
     }
 
-    async paginate(page = 1, relations = []): Promise<any> {
-        const take = 1;
-
-        const [users, total] = await this.userRepository.findAndCount({
-            take,
-            skip: (page - 1) * take,
-            relations
-        });
-
-        return {
-            // Hiding the password, don't use if you already used Interceptor.
-            data: users.map(user => {
-                const { password, ...data } = user;
-
-                return data;
-            }),
-            meta: {
-                total,
-                page,
-                last_page: Math.ceil(total / take)
-            }
-        }
+    async findAll(): Promise<User[]> {
+        return this.userModel.find().exec();
     }
 
-    async findUsersByUsernameOrEmail(search: string, page = 1): Promise<any> {
-        const take = 1;
-
-        const [users, total] = await this.userRepository
-            .createQueryBuilder('user')
-            .leftJoinAndSelect('user.role', 'role') // Join the role table and alias it as 'role'
-            .where('user.username ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` })
-            .skip((page - 1) * take)
-            .take(take)
-            .getManyAndCount();
-
-        return {
-            data: users.map(user => {
-                const { password, ...data } = user;
-
-                return data;
-            }),
-            meta: {
-                total,
-                page,
-                last_page: Math.ceil(total / take)
-            }
-        }
+    async findOne(options: any): Promise<User | null> {
+        return this.userModel.findOne(options).exec();
     }
 
-    async findUsersRegister(search: string): Promise<User[]> { // Change the return type to User[]
-        return this.userRepository
-        .createQueryBuilder('user')
-        .where('user.username ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` })
-        .getMany();
+    async findById(id: string): Promise<User | null> {
+        return this.userModel.findById(id).exec();
     }
 
+    async update(id: string, updateUserDto: any): Promise<User | null> {
+        return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
+    }
 
+    async delete(id: string): Promise<User | null> {
+        return this.userModel.findByIdAndDelete(id).exec();
+    }
 }
