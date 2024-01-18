@@ -1,7 +1,8 @@
 import { Model } from "mongoose";
 import { IPaginationOptions, IPaginationResult } from "./paginated.interface";
+import { UserDocument } from "src/user/models/user.schema";
 
-export abstract class AbstractService<T extends Document> {
+export abstract class AbstractService<T extends UserDocument>  {
     protected model: Model<T>;
 
     protected constructor(model: Model<T>) {
@@ -27,6 +28,10 @@ export abstract class AbstractService<T extends Document> {
 
     async findOne(options: object): Promise<T | null> {
         return this.model.findOne(options).exec();
+    }
+
+    async findById(id: string): Promise<T | null> {
+        return this.model.findById(id).exec();
     }
 
     async findOneWithRelations(data: any, options: any) {

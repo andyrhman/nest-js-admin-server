@@ -6,17 +6,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PermissionModule = void 0;
+exports.AuthGuard = void 0;
 const common_1 = require("@nestjs/common");
-const permission_schema_1 = require("./models/permission.schema");
-const mongoose_1 = require("@nestjs/mongoose");
-let PermissionModule = exports.PermissionModule = class PermissionModule {
+let AuthGuard = exports.AuthGuard = class AuthGuard {
+    canActivate(context) {
+        return true;
+    }
 };
-exports.PermissionModule = PermissionModule = __decorate([
-    (0, common_1.Module)({
-        imports: [
-            mongoose_1.MongooseModule.forFeature([{ name: 'Permission', schema: permission_schema_1.PermissionSchema }]),
-        ],
-    })
-], PermissionModule);
-//# sourceMappingURL=permission.module.js.map
+exports.AuthGuard = AuthGuard = __decorate([
+    (0, common_1.Injectable)()
+], AuthGuard);
+//# sourceMappingURL=auth.guard.js.map

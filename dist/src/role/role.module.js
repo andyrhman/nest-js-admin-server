@@ -15,7 +15,7 @@ let RoleModule = exports.RoleModule = class RoleModule {
 exports.RoleModule = RoleModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            mongoose_1.MongooseModule.forFeature([{ name: 'Role', schema: role_schema_1.Role }]),
+            mongoose_1.MongooseModule.forFeature([{ name: 'Role', schema: role_schema_1.RoleSchema }]),
         ],
     })
 ], RoleModule);

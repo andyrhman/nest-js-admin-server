@@ -21,7 +21,7 @@ import { UserService } from './user.service';
 import * as argon2 from 'argon2';
 import { UserCreateDto } from './models/user-create.dto';
 // import { AuthGuard } from '../auth/auth.guard';
-import { isUUID } from 'class-validator'; // Import class-validator for UUID validation
+import { isValidObjectId } from 'mongoose';
 import { RoleService } from 'src/role/role.service';
 import { Request, Response } from 'express';
 // import { AuthService } from 'src/auth/auth.service';
@@ -114,22 +114,23 @@ export class UserController {
         return data;
     }
 
-    // @Get(':id')
+    @Get(':id')
     // @UseGuards(AuthGuard)
     // @HasPermission('users')
-    // async get(@Param('id') id: string) {
-    //     if (!isUUID(id)) {
-    //         throw new BadRequestException('Invalid UUID format');
-    //     }
+    async get(@Param('id') id: string) {
+        if (!isValidObjectId(id)) {
+            throw new BadRequestException('Invalid Request');
+        }
 
-    //     const search = await this.userService.findOne({ id }, ['role']);
+        const search = await this.userService.findById(id);
 
-    //     if (!search) {
-    //         throw new NotFoundException('User not found');
-    //     }
-
-    //     return search;
-    // }
+        if (!search) {
+            throw new NotFoundException('User not found');
+        }
+        const {password, ...data} = search.toObject();
+        
+        return data;
+    }
 
     // // User update their own info
     // @Put('info')
@@ -191,7 +192,7 @@ export class UserController {
     //     return this.userService.findOne({ id });
     // }
 
-    // // * Admin update the user info
+    // * Admin update the user info
     // @Put(':id')
     // @UseGuards(AuthGuard)
     // @HasPermission('users')
@@ -200,11 +201,11 @@ export class UserController {
     //     @Body() body: any,
     //     @Res({ passthrough: true }) response: Response
     // ) {
-    //     if (!isUUID(id)) {
+    //     if (!isValidObjectId(id)) {
     //         throw new BadRequestException('Invalid UUID format');
     //     }
 
-    //     const existingUser = await this.userService.findOne({ id });
+    //     const existingUser = await this.userService.findById(id);
 
     //     if (!existingUser) {
     //         throw new NotFoundException('User not found');
@@ -232,7 +233,7 @@ export class UserController {
 
     //     // Update the role if role_id is provided
     //     if (role_id) {
-    //         const role = await this.roleService.findOne({ id: role_id });
+    //         const role = await this.roleService.findById(id);
     //         if (!role) {
     //             throw new NotFoundException('Role not found');
     //         }
@@ -243,19 +244,19 @@ export class UserController {
     //     await this.userService.update(id, existingUser);
 
     //     response.status(202);
-    //     return this.userService.findOne({ id });
+    //     return this.userService.findById(id);
     // }
 
-    // @Delete(':id')
+    @Delete(':id')
     // @UseGuards(AuthGuard)
     // @HasPermission('users')
-    // async delete(
-    //     @Param('id') id: string,
-    //     @Res({ passthrough: true }) response: Response
-    // ) {
-    //     await this.userService.delete(id);
+    async delete(
+        @Param('id') id: string,
+        @Res({ passthrough: true }) response: Response
+    ) {
+        await this.userService.delete(id);
 
-    //    return response.status(204).send(null);
+       return response.status(204).send(null);
 
-    // }
+    }
 }

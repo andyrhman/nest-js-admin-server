@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const user_service_1 = require("./user.service");
 const argon2 = require("argon2");
 const user_create_dto_1 = require("./models/user-create.dto");
+const mongoose_1 = require("mongoose");
 const sanitizeHtml = require("sanitize-html");
 let UserController = exports.UserController = class UserController {
     constructor(userService) {
@@ -65,6 +66,21 @@ let UserController = exports.UserController = class UserController {
         response.status(201);
         return data;
     }
+    async get(id) {
+        if (!(0, mongoose_1.isValidObjectId)(id)) {
+            throw new common_1.BadRequestException('Invalid Request');
+        }
+        const search = await this.userService.findById(id);
+        if (!search) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        const { password, ...data } = search.toObject();
+        return data;
+    }
+    async delete(id, response) {
+        await this.userService.delete(id);
+        return response.status(204).send(null);
+    }
 };
 __decorate([
     (0, common_1.Get)(),
@@ -83,6 +99,21 @@ __decorate([
     __metadata("design:paramtypes", [user_create_dto_1.UserCreateDto, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "get", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Res)({ passthrough: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "delete", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [user_service_1.UserService])

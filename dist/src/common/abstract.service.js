@@ -21,6 +21,9 @@ class AbstractService {
     async findOne(options) {
         return this.model.findOne(options).exec();
     }
+    async findById(id) {
+        return this.model.findById(id).exec();
+    }
     async findOneWithRelations(data, options) {
         return this.model.findOne(data).populate(`${options}`).exec();
     }

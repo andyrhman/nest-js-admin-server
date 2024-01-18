@@ -6,17 +6,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PermissionModule = void 0;
+exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
-const permission_schema_1 = require("./models/permission.schema");
+const auth_service_1 = require("./auth.service");
+const auth_controller_1 = require("./auth.controller");
 const mongoose_1 = require("@nestjs/mongoose");
-let PermissionModule = exports.PermissionModule = class PermissionModule {
+const user_schema_1 = require("../user/models/user.schema");
+const common_module_1 = require("../common/common.module");
+const user_module_1 = require("../user/user.module");
+let AuthModule = exports.AuthModule = class AuthModule {
 };
-exports.PermissionModule = PermissionModule = __decorate([
+exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            mongoose_1.MongooseModule.forFeature([{ name: 'Permission', schema: permission_schema_1.PermissionSchema }]),
+            mongoose_1.MongooseModule.forFeature([{ name: 'User', schema: user_schema_1.UserSchema }]),
+            user_module_1.UserModule,
+            common_module_1.CommonModule
         ],
+        providers: [auth_service_1.AuthService],
+        controllers: [auth_controller_1.AuthController]
     })
-], PermissionModule);
-//# sourceMappingURL=permission.module.js.map
+], AuthModule);
+//# sourceMappingURL=auth.module.js.map

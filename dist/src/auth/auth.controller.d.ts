@@ -21,28 +21,15 @@
 /// <reference types="mongoose/types/utility" />
 /// <reference types="mongoose/types/validation" />
 /// <reference types="mongoose/types/virtuals" />
+/// <reference types="mongoose" />
 /// <reference types="mongoose/types/inferschematype" />
-import { Types, HydratedDocument } from 'mongoose';
-import { Role, RoleDocument } from 'src/role/models/role.schema';
-export interface IUser {
-    toObject(): any;
-    fullName: string;
-    username: string;
-    email: string;
-    password: string;
-    created_at: Date;
-    role: RoleDocument;
+import { UserService } from 'src/user/user.service';
+import { RegisterDto } from './dto/register.dto';
+import { FastifyReply } from 'fastify';
+export declare class AuthController {
+    private userService;
+    constructor(userService: UserService);
+    register(body: RegisterDto, response: FastifyReply): Promise<import("mongoose").Document<unknown, {}, import("../user/models/user.schema").IUser> & import("../user/models/user.schema").IUser & {
+        _id: import("mongoose").Types.ObjectId;
+    }>;
 }
-export type UserDocument = HydratedDocument<IUser>;
-export declare class User {
-    fullName: string;
-    username: string;
-    email: string;
-    password: string;
-    role: Role;
-}
-export declare const UserSchema: import("mongoose").Schema<User, import("mongoose").Model<User, any, any, any, import("mongoose").Document<unknown, any, User> & User & {
-    _id: Types.ObjectId;
-}, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, User, import("mongoose").Document<unknown, {}, import("mongoose").FlatRecord<User>> & import("mongoose").FlatRecord<User> & {
-    _id: Types.ObjectId;
-}>;

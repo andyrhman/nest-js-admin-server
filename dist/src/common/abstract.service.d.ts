@@ -24,7 +24,8 @@
 /// <reference types="mongoose/types/inferschematype" />
 import { Model } from "mongoose";
 import { IPaginationOptions, IPaginationResult } from "./paginated.interface";
-export declare abstract class AbstractService<T extends Document> {
+import { UserDocument } from "src/user/models/user.schema";
+export declare abstract class AbstractService<T extends UserDocument> {
     protected model: Model<T>;
     protected constructor(model: Model<T>);
     all(): Promise<T[]>;
@@ -32,6 +33,7 @@ export declare abstract class AbstractService<T extends Document> {
     update(id: string, data: Partial<T>): Promise<T | null>;
     delete(id: string): Promise<T | null>;
     findOne(options: object): Promise<T | null>;
+    findById(id: string): Promise<T | null>;
     findOneWithRelations(data: any, options: any): Promise<import("mongoose").UnpackedIntersection<import("mongoose").IfAny<T, any, import("mongoose").Document<unknown, {}, T> & import("mongoose").Require_id<T>>, {}>>;
     findByEmail(email: string): Promise<T | null>;
     findByUsername(username: string): Promise<T | null>;

@@ -22,25 +22,6 @@ let UserService = exports.UserService = class UserService extends abstract_servi
         super(userModel);
         this.userModel = userModel;
     }
-    async create(data) {
-        const newUser = new this.userModel(data);
-        return newUser.save();
-    }
-    async find() {
-        return this.userModel.find().exec();
-    }
-    async findOne(options) {
-        return this.userModel.findOne(options).exec();
-    }
-    async findById(id) {
-        return this.userModel.findById(id).exec();
-    }
-    async update(id, updateUserDto) {
-        return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
-    }
-    async delete(id) {
-        return this.userModel.findByIdAndDelete(id).exec();
-    }
     async findAll(page = 1, limit = 1) {
         const skip = (page - 1) * limit;
         const total = await this.userModel.countDocuments().exec();
