@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserSchema, IUser, UserDocument } from './models/user.schema';
+import { IUser } from './models/user.schema';
 import { Repository } from 'typeorm';
 import { AbstractService } from 'src/common/abstract.service';
 
 @Injectable()
-export class UserService extends AbstractService<UserDocument>{
+export class UserService extends AbstractService<IUser>{
     constructor(
-        @InjectModel('User') private userModel: Model<UserDocument>
+        @InjectModel('User') private userModel: Model<IUser>
     ) {
         super(userModel)
     }

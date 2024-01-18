@@ -1,19 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Role } from './models/role.schema';
-import { Repository } from 'typeorm';
-// import { AbstractService } from 'src/common/abstract.service';
+import { IRole } from './models/role.schema';
+import { AbstractService } from 'src/common/abstract.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
-export class RoleService {
-    // constructor(
-    //     @InjectRepository(Role) private readonly roleRepository: Repository<Role>
-    // ) {
-    //     super(roleRepository);
-    // }
+export class RoleService extends AbstractService<IRole>{
+    constructor(
+        @InjectModel('Role') private roleModel: Model<IRole>
+    ) {
+        super(roleModel);
+    }
 
-    // // Find all user in the DB
-    // async all(relations = []): Promise<any[]> {
-    //     return await this.repository.find({relations, order: {id: "DESC"}});
-    // }    
 }

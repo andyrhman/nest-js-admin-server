@@ -24,8 +24,7 @@
 /// <reference types="mongoose/types/inferschematype" />
 import { Model } from "mongoose";
 import { IPaginationOptions, IPaginationResult } from "./paginated.interface";
-import { UserDocument } from "src/user/models/user.schema";
-export declare abstract class AbstractService<T extends UserDocument> {
+export declare abstract class AbstractService<T extends Document> {
     protected model: Model<T>;
     protected constructor(model: Model<T>);
     all(): Promise<T[]>;

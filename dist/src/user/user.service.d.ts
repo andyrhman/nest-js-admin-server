@@ -1,9 +1,9 @@
 import { Model } from 'mongoose';
-import { IUser, UserDocument } from './models/user.schema';
+import { IUser } from './models/user.schema';
 import { AbstractService } from 'src/common/abstract.service';
-export declare class UserService extends AbstractService<UserDocument> {
+export declare class UserService extends AbstractService<IUser> {
     private userModel;
-    constructor(userModel: Model<UserDocument>);
+    constructor(userModel: Model<IUser>);
     findAll(page?: number, limit?: number): Promise<{
         data: IUser[];
         total: number;

@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+import mongoose from 'mongoose';
 
 async function bootstrap() {
   // ? Fastify
@@ -10,6 +11,11 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter()
   );
+
+  // ? Wait you can connect mongoose directly in main.ts?
+  mongoose.connect('mongodb://localhost/nest_admin')
+  .then(() => console.log('📖 Database has been initialized!'))
+  .catch((err) => console.error(err));
 
   // ? Express
   // const app = await NestFactory.create(AppModule);
