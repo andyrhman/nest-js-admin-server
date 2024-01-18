@@ -1,10 +1,18 @@
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // ? Fastify
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter()
+  );
+
+  // ? Express
+  // const app = await NestFactory.create(AppModule);
 
   // Using api as the global url --> http://localhost:5000/api
   app.setGlobalPrefix('api');
@@ -20,6 +28,6 @@ async function bootstrap() {
     credentials: true //passing cookie back and forth in every request remove {passtrough: true}
   });
 
-  await app.listen(8000);
+  await app.listen(8000, '0.0.0.0');
 }
 bootstrap();

@@ -17,9 +17,36 @@ const common_1 = require("@nestjs/common");
 const user_service_1 = require("./user.service");
 const argon2 = require("argon2");
 const user_create_dto_1 = require("./models/user-create.dto");
+const sanitizeHtml = require("sanitize-html");
 let UserController = exports.UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
+    }
+    async all(page, limit, search) {
+        const options = {
+            page: Number(page) || 1,
+            limit: Number(limit) || 10,
+        };
+        let result = await this.userService.paginate(options);
+        if (typeof search === 'string') {
+            search = sanitizeHtml(search);
+            if (search) {
+                const search2 = search.toString().toLowerCase();
+                result.data = result.data.filter(p => p.username.toLowerCase().indexOf(search2) >= 0 ||
+                    p.email.toLowerCase().indexOf(search2) >= 0);
+                if (result.data.length === 0) {
+                    throw new common_1.NotFoundException(`Not found search name '${search}'`);
+                }
+            }
+        }
+        const responseData = result.data.map(u => {
+            const { password, ...data } = u.toObject();
+            return data;
+        });
+        return {
+            data: responseData,
+            meta: result.meta
+        };
     }
     async create(body, response) {
         const hashedPassword = await argon2.hash('123456');
@@ -39,6 +66,15 @@ let UserController = exports.UserController = class UserController {
         return data;
     }
 };
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('search')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "all", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

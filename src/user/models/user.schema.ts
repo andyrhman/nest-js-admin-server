@@ -1,9 +1,9 @@
 // user.schema.ts
 import * as mongoose from 'mongoose';
-import { Document } from 'mongoose';
 import { IRole } from 'src/role/models/role.schema';
 
-export interface User extends Document {
+export interface IUser extends Document {
+  toObject(): any;
   fullName: string;
   username: string;
   email: string;

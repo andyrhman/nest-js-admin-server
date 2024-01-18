@@ -1,66 +1,66 @@
-// import { Injectable } from '@nestjs/common';
-// import { Repository } from 'typeorm';
-// import { PaginatedResult } from './paginated-result.interface';
+import { Model } from "mongoose";
+import { IPaginationOptions, IPaginationResult } from "./paginated.interface";
 
-// @Injectable()
-// export abstract class AbstractService {
+export abstract class AbstractService<T extends Document> {
+    protected model: Model<T>;
 
-//     protected constructor(
-//         protected readonly repository: Repository<any>
-//     ) { }
+    protected constructor(model: Model<T>) {
+        this.model = model;
+    }
 
-//     // Find all user in the DB.
-//     async all(relations = []): Promise<any[]> {
-//         return await this.repository.find({relations});
-//     }
+    async all(): Promise<T[]> {
+        return this.model.find().exec();
+    }
 
-//     async paginate(page = 1, relations = []): Promise<PaginatedResult> {
-//         const take = 12;
+    async create(data: Partial<T>): Promise<T> {
+        const created = new this.model(data);
+        return created.save();
+    }
 
-//         const [data, total] = await this.repository.findAndCount({
-//             take,
-//             skip: (page - 1) * take,
-//             relations
-//         });
+    async update(id: string, data: Partial<T>): Promise<T | null> {
+        return this.model.findByIdAndUpdate(id, data, { new: true }).exec();
+    }
 
-//         return {
-//             data: data,
-//             meta: {
-//                 total,
-//                 page,
-//                 last_page: Math.ceil(total / take)
-//             }
-//         }
-//     }
+    async delete(id: string): Promise<T | null> {
+        return this.model.findByIdAndDelete(id).exec();
+    }
 
-//     async create(data): Promise<any> {
-//         return this.repository.save(data);
-//     }
+    async findOne(options: object): Promise<T | null> {
+        return this.model.findOne(options).exec();
+    }
 
-//     async update(id: string, data): Promise<any> {
-//         return this.repository.update(id, data);
-//     }
+    async findOneWithRelations(data: any, options: any) {
+        return this.model.findOne(data).populate(`${options}`).exec();
+    }
 
-//     async delete(id: string): Promise<any> {
-//         return this.repository.delete(id);
-//     }
+    async findByEmail(email: string): Promise<T | null> {
+        return this.model.findOne({ email }).exec();
+    }
 
-//     async findOne(options, relations = []) {
-//         return this.repository.findOne({ where: options, relations });
-//     }
+    async findByUsername(username: string): Promise<T | null> {
+        return this.model.findOne({ username }).exec();
+    }
 
-//     // Find a user by their username or email
-//     async findByUsernameOrEmail(username: string, email: string): Promise<any | null> {
-//         return this.repository.findOne({
-//             where: [{ username }, { email }],
-//         });
-//     }
+    async findByUsernameOrEmail(username: string, email: string): Promise<T | null> {
+        return this.model.findOne({
+            $or: [{ username }, { email }],
+        }).exec();
+    }
 
-//     async findByEmail(email: string): Promise<any | null> {
-//         return this.repository.findOne({ where: { email } }); // Use the 'where' option
-//     }
+    async paginate(paginationOptions: IPaginationOptions): Promise<IPaginationResult<T>> {
+        const { page, limit } = paginationOptions;
+        const skip = (page - 1) * limit;
+        const total = await this.model.countDocuments().exec();
+        const data = await this.model.find().limit(limit).skip(skip).exec();
+        const last_page = Math.ceil(total / limit);
 
-//     async findByUsername(username: string): Promise<any | null> {
-//         return this.repository.findOne({ where: { username } }); // Use the 'where' option
-//     }
-// }
+        return {
+            data,
+            meta: {
+                total,
+                page,
+                last_page,
+            },
+        };
+    }
+}

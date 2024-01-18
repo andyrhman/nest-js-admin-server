@@ -1,12 +1,19 @@
 import { Model } from 'mongoose';
-import { User } from './models/user.schema';
-export declare class UserService {
+import { IUser } from './models/user.schema';
+import { AbstractService } from 'src/common/abstract.service';
+export declare class UserService extends AbstractService<IUser> {
     private userModel;
-    constructor(userModel: Model<User>);
-    create(createUserDto: any): Promise<User>;
-    findAll(): Promise<User[]>;
-    findOne(options: any): Promise<User | null>;
-    findById(id: string): Promise<User | null>;
-    update(id: string, updateUserDto: any): Promise<User | null>;
-    delete(id: string): Promise<User | null>;
+    constructor(userModel: Model<IUser>);
+    create(data: any): Promise<IUser>;
+    find(): Promise<IUser[]>;
+    findOne(options: any): Promise<IUser | null>;
+    findById(id: string): Promise<IUser | null>;
+    update(id: string, updateUserDto: any): Promise<IUser | null>;
+    delete(id: string): Promise<IUser | null>;
+    findAll(page?: number, limit?: number): Promise<{
+        data: IUser[];
+        total: number;
+        page: number;
+        last_page: number;
+    }>;
 }

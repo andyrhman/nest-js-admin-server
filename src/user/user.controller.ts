@@ -18,7 +18,6 @@ import {
 }
     from '@nestjs/common';
 import { UserService } from './user.service';
-import { User } from './models/user.schema';
 import * as argon2 from 'argon2';
 import { UserCreateDto } from './models/user-create.dto';
 // import { AuthGuard } from '../auth/auth.guard';
@@ -27,6 +26,9 @@ import { RoleService } from 'src/role/role.service';
 import { Request, Response } from 'express';
 // import { AuthService } from 'src/auth/auth.service';
 import { HasPermission } from 'src/permission/decorator/permission.decorator';
+import { paginate } from './pagination.utility';
+import { IPaginationOptions } from 'src/common/paginated.interface';
+import * as sanitizeHtml from 'sanitize-html';
 
 // @UseInterceptors(ClassSerializerInterceptor) // hide the password
 @Controller('users')
@@ -37,12 +39,48 @@ export class UserController {
         // private authService: AuthService
     ) { }
 
-    // @Get()
+    @Get()
     // @UseGuards(AuthGuard)
     // @HasPermission('users')
-    // async all(@Query('page') page: number = 1) {
-    //     return await this.userService.paginate(page, ['role']);
-    // }
+    async all(
+        @Query('page') page: number,
+        @Query('limit') limit: number,
+        @Query('search') search: string
+    ) {
+        const options: IPaginationOptions = {
+            page: Number(page) || 1,
+            limit: Number(limit) || 10,
+        };
+
+        let result = await this.userService.paginate(options);
+
+
+        if (typeof search === 'string') {
+            search = sanitizeHtml(search);
+            if (search) {
+                const search2 = search.toString().toLowerCase();
+                result.data = result.data.filter(
+                    p => p.username.toLowerCase().indexOf(search2) >= 0 ||
+                        p.email.toLowerCase().indexOf(search2) >= 0
+                );
+
+                // Check if the resulting filtered data array is empty
+                if (result.data.length === 0) {
+                    // Respond with a 404 status code and a message
+                    throw new NotFoundException(`Not found search name '${search}'`)
+                }
+            }
+        }
+        const responseData = result.data.map(u => {
+            const { password, ...data } = u.toObject();
+            return data;
+        });
+
+        return {
+            data: responseData,
+            meta: result.meta
+        };
+    }
 
     @Post()
     // @UseGuards(AuthGuard)
@@ -72,7 +110,7 @@ export class UserController {
         const { password, ...data } = user.toObject();
 
         response.status(201);
-        
+
         return data;
     }
 

@@ -16,15 +16,17 @@ exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
-let UserService = exports.UserService = class UserService {
+const abstract_service_1 = require("../common/abstract.service");
+let UserService = exports.UserService = class UserService extends abstract_service_1.AbstractService {
     constructor(userModel) {
+        super(userModel);
         this.userModel = userModel;
     }
-    async create(createUserDto) {
-        const newUser = new this.userModel(createUserDto);
+    async create(data) {
+        const newUser = new this.userModel(data);
         return newUser.save();
     }
-    async findAll() {
+    async find() {
         return this.userModel.find().exec();
     }
     async findOne(options) {
@@ -38,6 +40,18 @@ let UserService = exports.UserService = class UserService {
     }
     async delete(id) {
         return this.userModel.findByIdAndDelete(id).exec();
+    }
+    async findAll(page = 1, limit = 1) {
+        const skip = (page - 1) * limit;
+        const total = await this.userModel.countDocuments().exec();
+        const data = await this.userModel.find().limit(limit).skip(skip).exec();
+        const last_page = Math.ceil(total / limit);
+        return {
+            data,
+            total,
+            page,
+            last_page,
+        };
     }
 };
 exports.UserService = UserService = __decorate([
