@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CommonModule } from './common/common.module';
 // import { ProductModule } from './product/product.module';
 // import { OrderModule } from './order/order.module';
-// import { PermissionGuard } from './permission/permission.guard';
+import { PermissionGuard } from './permission/permission.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
@@ -25,11 +25,11 @@ import { AuthModule } from './auth/auth.module';
     // ProductModule,
     // OrderModule,
   ],
-  // providers: [
-  //   {
-  //     provide: APP_GUARD,
-  //     useClass: PermissionGuard
-  //   }
-  // ]
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard
+    }
+  ]
 })
 export class AppModule { }

@@ -4,8 +4,6 @@ import {
     Controller,
     Get,
     Post,
-    UseInterceptors,
-    ClassSerializerInterceptor,
     UseGuards,
     Param,
     NotFoundException,
@@ -20,28 +18,28 @@ import {
 import { UserService } from './user.service';
 import * as argon2 from 'argon2';
 import { UserCreateDto } from './models/user-create.dto';
-// import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { isValidObjectId } from 'mongoose';
 import { RoleService } from 'src/role/role.service';
 import { Request, Response } from 'express';
-// import { AuthService } from 'src/auth/auth.service';
+import { FastifyReply } from 'fastify';
+import { AuthService } from 'src/auth/auth.service';
 import { HasPermission } from 'src/permission/decorator/permission.decorator';
 import { User } from './models/user.schema';
 import { IPaginationOptions } from 'src/common/paginated.interface';
 import * as sanitizeHtml from 'sanitize-html';
 
-// @UseInterceptors(ClassSerializerInterceptor) // hide the password
 @Controller('users')
 export class UserController {
     constructor(
         private userService: UserService,
-        // private roleService: RoleService,
-        // private authService: AuthService
+        private roleService: RoleService,
+        private authService: AuthService
     ) { }
 
     @Get()
-    // @UseGuards(AuthGuard)
-    // @HasPermission('users')
+    @UseGuards(AuthGuard)
+    @HasPermission('users')
     async all(
         @Query('page') page: number,
         @Query('limit') limit: number,
@@ -83,11 +81,11 @@ export class UserController {
     }
 
     @Post()
-    // @UseGuards(AuthGuard)
-    // @HasPermission('users')
+    @UseGuards(AuthGuard)
+    @HasPermission('users')
     async create(
         @Body() body: UserCreateDto,
-        @Res({ passthrough: true }) response: Response
+        @Res({ passthrough: true }) response: FastifyReply
     ) {
         const hashedPassword = await argon2.hash('123456');
 
@@ -104,19 +102,17 @@ export class UserController {
             username: body.username,
             email: body.email,
             password: hashedPassword,
-            // role: { id: body.role_id }
+            role: "65aa17c1770eddfccc012cf8"
         });
 
         const { password, ...data } = user.toObject();
 
-        response.status(201);
-
-        return data;
+        return response.status(201).send(data);
     }
 
     @Get(':id')
-    // @UseGuards(AuthGuard)
-    // @HasPermission('users')
+    @UseGuards(AuthGuard)
+    @HasPermission('users')
     async get(@Param('id') id: string) {
         if (!isValidObjectId(id)) {
             throw new BadRequestException('Invalid Request');
@@ -127,136 +123,137 @@ export class UserController {
         if (!search) {
             throw new NotFoundException('User not found');
         }
-        const {password, ...data} = search.toObject();
-        
+        const { password, ...data } = search.toObject();
+
         return data;
     }
 
-    // // User update their own info
-    // @Put('info')
-    // @UseGuards(AuthGuard)
-    // async updateInfo(
-    //     @Req() request: Request,
-    //     @Body() body: any,
-    //     @Res({ passthrough: true }) response: Response
-    // ) {
-    //     const id = await this.authService.userId(request);
-    //     const existingUser = await this.userService.findOne({ id });
-
-    //     if (!existingUser) {
-    //         throw new NotFoundException('User not found');
-    //     }
-
-    //     if (body.email && body.email !== existingUser.email) {
-    //         const existingUserByEmail = await this.userService.findByEmail(body.email);
-    //         if (existingUserByEmail) {
-    //             throw new ConflictException('Email already exists');
-    //         }
-    //         existingUser.email = body.email;
-    //     }
-
-    //     if (body.username && body.username !== existingUser.username) {
-    //         const existingUserByUsername = await this.userService.findByUsername(body.username);
-    //         if (existingUserByUsername) {
-    //             throw new ConflictException('Username already exists');
-    //         }
-    //         existingUser.username = body.username;
-    //     }
-
-    //     await this.userService.update(id, existingUser);
-    //     response.status(202);
-    //     return this.userService.findOne({ id });
-    // }
-
-    // // User update their own password
-    // @Put('password')
-    // @UseGuards(AuthGuard)
-    // async updatePassword(
-    //     @Req() request: Request,
-    //     @Body() body: any,
-    //     @Res({ passthrough: true }) response: Response
-    // ) {
-    //     if (body.password !== body.confirm_password) {
-    //         throw new BadRequestException("Password do not match.");
-    //     }
-
-    //     const id = await this.authService.userId(request);
-
-    //     const hashPassword = await argon2.hash(body.password);
-
-    //     await this.userService.update(id, {
-    //         password: hashPassword
-    //     });
-
-    //     response.status(202);
-    //     return this.userService.findOne({ id });
-    // }
-
     // * Admin update the user info
-    // @Put(':id')
-    // @UseGuards(AuthGuard)
-    // @HasPermission('users')
-    // async update(
-    //     @Param('id') id: string,
-    //     @Body() body: any,
-    //     @Res({ passthrough: true }) response: Response
-    // ) {
-    //     if (!isValidObjectId(id)) {
-    //         throw new BadRequestException('Invalid UUID format');
-    //     }
+    @Put(':id')
+    @UseGuards(AuthGuard)
+    @HasPermission('users')
+    async update(
+        @Param('id') id: string,
+        @Body() body: any,
+        @Res({ passthrough: true }) response: FastifyReply
+    ) {
+        if (!isValidObjectId(id)) {
+            throw new BadRequestException('Invalid Request');
+        }
 
-    //     const existingUser = await this.userService.findById(id);
+        const existingUser = await this.userService.findById(id);
 
-    //     if (!existingUser) {
-    //         throw new NotFoundException('User not found');
-    //     }
+        if (!existingUser) {
+            throw new NotFoundException('User not found');
+        }
 
-    //     const { username, email, role_id } = body;
+        const { username, email, role_id } = body;
 
-    //     // Check if username already exists and is different from the existing one
-    //     if (username && username !== existingUser.username) {
-    //         const existingUsername = await this.userService.findByUsername(username);
-    //         if (existingUsername) {
-    //             throw new BadRequestException('Username already exists');
-    //         }
-    //         existingUser.username = username;
-    //     }
+        // Check if username already exists and is different from the existing one
+        if (username && username !== existingUser.username) {
+            const existingUsername = await this.userService.findByUsername(username);
+            if (existingUsername) {
+                throw new BadRequestException('Username already exists');
+            }
+            existingUser.username = username;
+        }
 
-    //     // Check if email already exists and is different from the existing one
-    //     if (email && email !== existingUser.email) {
-    //         const existingEmail = await this.userService.findByEmail(email);
-    //         if (existingEmail) {
-    //             throw new BadRequestException('Email already exists');
-    //         }
-    //         existingUser.email = email;
-    //     }
+        // Check if email already exists and is different from the existing one
+        if (email && email !== existingUser.email) {
+            const existingEmail = await this.userService.findByEmail(email);
+            if (existingEmail) {
+                throw new BadRequestException('Email already exists');
+            }
+            existingUser.email = email;
+        }
 
-    //     // Update the role if role_id is provided
-    //     if (role_id) {
-    //         const role = await this.roleService.findById(id);
-    //         if (!role) {
-    //             throw new NotFoundException('Role not found');
-    //         }
-    //         existingUser.role = role;
-    //     }
+        // Update the role if role_id is provided
+        if (role_id) {
+            const role = await this.roleService.findById(id);
+            if (!role) {
+                throw new NotFoundException('Role not found');
+            }
+            existingUser.role = role;
+        }
 
-    //     // Perform the update
-    //     await this.userService.update(id, existingUser);
+        // Perform the update
+        const { password, ...user } = (await this.userService.update(id, existingUser)).toObject();
 
-    //     response.status(202);
-    //     return this.userService.findById(id);
-    // }
+        return response.status(202).send(user);
+    }
 
     @Delete(':id')
-    // @UseGuards(AuthGuard)
-    // @HasPermission('users')
+    @UseGuards(AuthGuard)
+    @HasPermission('users')
     async delete(
         @Param('id') id: string,
-        @Res({ passthrough: true }) response: Response
+        @Res({ passthrough: true }) response: FastifyReply
     ) {
+        if (!isValidObjectId(id)) {
+            throw new BadRequestException('Invalid Request');
+        }
+
         await this.userService.delete(id);
 
-       return response.status(204).send(null);
+        return response.status(204).send(null);
+    }
 
+    // User update their own info
+    @Put('info')
+    @UseGuards(AuthGuard)
+    async updateInfo(
+        @Req() request: Request,
+        @Body() body: any,
+        @Res({ passthrough: true }) response: FastifyReply
+    ) {
+        const id = await this.authService.userId(request);
+        const existingUser = await this.userService.findById(id);
+
+        if (!existingUser) {
+            throw new NotFoundException('User not found');
+        }
+
+        if (body.email && body.email !== existingUser.email) {
+            const existingUserByEmail = await this.userService.findByEmail(body.email);
+            if (existingUserByEmail) {
+                throw new ConflictException('Email already exists');
+            }
+            existingUser.email = body.email;
+        }
+
+        if (body.username && body.username !== existingUser.username) {
+            const existingUserByUsername = await this.userService.findByUsername(body.username);
+            if (existingUserByUsername) {
+                throw new ConflictException('Username already exists');
+            }
+            existingUser.username = body.username;
+        }
+
+        const { password, ...user } = (await this.userService.update(id, existingUser)).toObject();
+
+        return response.status(202).send(user);
+    }
+
+    // User update their own password
+    @Put('password')
+    @UseGuards(AuthGuard)
+    async updatePassword(
+        @Req() request: Request,
+        @Body() body: any,
+        @Res({ passthrough: true }) response: FastifyReply
+    ) {
+        if (body.password !== body.confirm_password) {
+            throw new BadRequestException("Password do not match.");
+        }
+
+        const id = await this.authService.userId(request);
+
+        const hashPassword = await argon2.hash(body.password);
+
+        const { password, ...user } = (await this.userService.update(id, {
+            password: hashPassword
+        })).toObject();
+
+        return response.status(202).send(user);
     }
 }

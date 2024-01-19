@@ -11,4 +11,9 @@ export class RoleService extends AbstractService<RoleDocument>{
     ) {
         super(roleModel);
     }
+
+    async findUserAndPopulate(id: string): Promise<RoleDocument | null>{
+        return this.roleModel.findById(id).populate('permissions').exec();
+    }
+
 }

@@ -22,6 +22,9 @@ let RoleService = exports.RoleService = class RoleService extends abstract_servi
         super(roleModel);
         this.roleModel = roleModel;
     }
+    async findUserAndPopulate(id) {
+        return this.roleModel.findById(id).populate('permissions').exec();
+    }
 };
 exports.RoleService = RoleService = __decorate([
     (0, common_1.Injectable)(),

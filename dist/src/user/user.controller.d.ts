@@ -25,10 +25,15 @@
 /// <reference types="mongoose/types/inferschematype" />
 import { UserService } from './user.service';
 import { UserCreateDto } from './models/user-create.dto';
-import { Response } from 'express';
+import { RoleService } from 'src/role/role.service';
+import { Request } from 'express';
+import { FastifyReply } from 'fastify';
+import { AuthService } from 'src/auth/auth.service';
 export declare class UserController {
     private userService;
-    constructor(userService: UserService);
+    private roleService;
+    private authService;
+    constructor(userService: UserService, roleService: RoleService, authService: AuthService);
     all(page: number, limit: number, search: string): Promise<{
         data: {
             toObject(): any;
@@ -43,17 +48,7 @@ export declare class UserController {
         }[];
         meta: import("src/common/paginated.interface").IPaginationMeta;
     }>;
-    create(body: UserCreateDto, response: Response): Promise<{
-        toObject(): any;
-        fullName: string;
-        username: string;
-        email: string;
-        created_at: Date;
-        role: import("mongoose").Document<unknown, {}, import("../role/models/role.schema").IRole> & import("../role/models/role.schema").IRole & Required<{
-            _id: string;
-        }>;
-        _id: import("mongoose").Types.ObjectId;
-    }>;
+    create(body: UserCreateDto, response: FastifyReply): Promise<never>;
     get(id: string): Promise<{
         toObject(): any;
         fullName: string;
@@ -65,5 +60,8 @@ export declare class UserController {
         }>;
         _id: import("mongoose").Types.ObjectId;
     }>;
-    delete(id: string, response: Response): Promise<Response<any, Record<string, any>>>;
+    update(id: string, body: any, response: FastifyReply): Promise<never>;
+    delete(id: string, response: FastifyReply): Promise<never>;
+    updateInfo(request: Request, body: any, response: FastifyReply): Promise<never>;
+    updatePassword(request: Request, body: any, response: FastifyReply): Promise<never>;
 }

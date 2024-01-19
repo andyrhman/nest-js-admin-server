@@ -11,6 +11,8 @@ const common_1 = require("@nestjs/common");
 const config_module_1 = require("../config/config.module");
 const config_1 = require("@nestjs/config");
 const common_module_1 = require("./common/common.module");
+const permission_guard_1 = require("./permission/permission.guard");
+const core_1 = require("@nestjs/core");
 const user_module_1 = require("./user/user.module");
 const role_module_1 = require("./role/role.module");
 const permission_module_1 = require("./permission/permission.module");
@@ -30,6 +32,12 @@ exports.AppModule = AppModule = __decorate([
             permission_module_1.PermissionModule,
             auth_module_1.AuthModule,
         ],
+        providers: [
+            {
+                provide: core_1.APP_GUARD,
+                useClass: permission_guard_1.PermissionGuard
+            }
+        ]
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map
