@@ -25,13 +25,22 @@
 /// <reference types="mongoose/types/inferschematype" />
 import { BadRequestException } from '@nestjs/common';
 import { RoleService } from './role.service';
+import { FastifyReply } from 'fastify';
 import { PermissionService } from 'src/permission/permission.service';
 import { RoleDTO } from './dto/role.dto';
 export declare class RoleController {
     private roleService;
     private permissionService;
     constructor(roleService: RoleService, permissionService: PermissionService);
+    all(): Promise<(import("mongoose").Document<unknown, {}, import("./models/role.schema").IRole> & import("./models/role.schema").IRole & Required<{
+        _id: string;
+    }>)[]>;
     create(body: RoleDTO): Promise<(import("mongoose").Document<unknown, {}, import("./models/role.schema").IRole> & import("./models/role.schema").IRole & Required<{
         _id: string;
     }>) | BadRequestException>;
+    get(id: string): Promise<import("mongoose").Document<unknown, {}, import("./models/role.schema").IRole> & import("./models/role.schema").IRole & Required<{
+        _id: string;
+    }>>;
+    update(id: string, body: RoleDTO, response: FastifyReply): Promise<BadRequestException>;
+    delete(id: string, response: FastifyReply): Promise<never>;
 }

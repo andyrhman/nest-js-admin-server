@@ -31,7 +31,7 @@ export class PermissionGuard implements CanActivate {
 
     const user: User = await this.userService.findUserAndPopulate(id);
 
-    const role: Role = await this.roleService.findUserAndPopulate(user.role._id);
+    const role: Role = await this.roleService.findRolesAndPopulate(user.role._id);
 
     // Delete this if you want only permissions like @HasPermission('view_users') or @HasPermission('edit_users')
     if (request.method === 'GET') {

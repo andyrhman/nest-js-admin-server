@@ -12,7 +12,11 @@ export class RoleService extends AbstractService<RoleDocument>{
         super(roleModel);
     }
 
-    async findUserAndPopulate(id: string): Promise<RoleDocument | null>{
+    async findAllRoles(): Promise<RoleDocument[]> {
+        return this.roleModel.find().populate('permissions').exec();
+    }
+
+    async findRolesAndPopulate(id: string): Promise<RoleDocument | null> {
         return this.roleModel.findById(id).populate('permissions').exec();
     }
 

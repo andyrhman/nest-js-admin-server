@@ -22,7 +22,10 @@ let RoleService = exports.RoleService = class RoleService extends abstract_servi
         super(roleModel);
         this.roleModel = roleModel;
     }
-    async findUserAndPopulate(id) {
+    async findAllRoles() {
+        return this.roleModel.find().populate('permissions').exec();
+    }
+    async findRolesAndPopulate(id) {
         return this.roleModel.findById(id).populate('permissions').exec();
     }
 };

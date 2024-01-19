@@ -31,6 +31,10 @@ export abstract class AbstractService<T extends HydratedDocument<any>> {
         return this.model.findByIdAndUpdate(id, data, { new: true }).exec();
     }
 
+    async findOneAndUpdate(id: any, data: any): Promise<T | null> {
+        return this.model.findOneAndUpdate(id, data, { new: true, overwrite: true }).exec();
+    }
+
     async delete(id: string): Promise<T | null> {
         return this.model.findByIdAndDelete(id).exec();
     }
@@ -41,10 +45,6 @@ export abstract class AbstractService<T extends HydratedDocument<any>> {
 
     async findById(id: string): Promise<T | null> {
         return this.model.findById(id).exec();
-    }
-
-    async findOneWithRelations(data: any, options: any) {
-        return this.model.findOne(data).populate(`${options}`).exec();
     }
 
     async findByEmail(email: string): Promise<T | null> {

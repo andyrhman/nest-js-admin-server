@@ -4,5 +4,6 @@ import { Model } from 'mongoose';
 export declare class RoleService extends AbstractService<RoleDocument> {
     private roleModel;
     constructor(roleModel: Model<RoleDocument>);
-    findUserAndPopulate(id: string): Promise<RoleDocument | null>;
+    findAllRoles(): Promise<RoleDocument[]>;
+    findRolesAndPopulate(id: string): Promise<RoleDocument | null>;
 }

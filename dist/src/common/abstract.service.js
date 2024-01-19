@@ -23,6 +23,9 @@ class AbstractService {
     async update(id, data) {
         return this.model.findByIdAndUpdate(id, data, { new: true }).exec();
     }
+    async findOneAndUpdate(id, data) {
+        return this.model.findOneAndUpdate(id, data, { new: true, overwrite: true }).exec();
+    }
     async delete(id) {
         return this.model.findByIdAndDelete(id).exec();
     }
@@ -31,9 +34,6 @@ class AbstractService {
     }
     async findById(id) {
         return this.model.findById(id).exec();
-    }
-    async findOneWithRelations(data, options) {
-        return this.model.findOne(data).populate(`${options}`).exec();
     }
     async findByEmail(email) {
         return this.model.findOne({ email }).exec();
