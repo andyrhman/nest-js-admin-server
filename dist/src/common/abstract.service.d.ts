@@ -28,7 +28,8 @@ export declare abstract class AbstractService<T extends HydratedDocument<any>> {
     protected model: Model<T>;
     protected constructor(model: Model<T>);
     all(): Promise<T[]>;
-    create(data: Partial<T>): Promise<T>;
+    create(data: object): Promise<T>;
+    save(data: Partial<T>): Promise<T>;
     seed(data: object): Promise<T>;
     update(id: string, data: Partial<T>): Promise<T | null>;
     delete(id: string): Promise<T | null>;

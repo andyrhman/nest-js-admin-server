@@ -22,6 +22,9 @@ let UserService = exports.UserService = class UserService extends abstract_servi
         super(userModel);
         this.userModel = userModel;
     }
+    async findUserAndPopulate(id) {
+        return this.userModel.findById(id).populate('role').exec();
+    }
     async findAll(page = 1, limit = 1) {
         const skip = (page - 1) * limit;
         const total = await this.userModel.countDocuments().exec();

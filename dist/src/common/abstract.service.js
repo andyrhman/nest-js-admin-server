@@ -12,6 +12,10 @@ class AbstractService {
         const created = new this.model(data);
         return created.save();
     }
+    async save(data) {
+        const created = new this.model(data);
+        return created.save();
+    }
     async seed(data) {
         const created = new this.model(data);
         return created.save();

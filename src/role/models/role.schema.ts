@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types, HydratedDocument } from 'mongoose';
-import { PermissionDocument, Permission, IPermission } from 'src/permission/models/permission.schema';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { PermissionDocument, Permission } from 'src/permission/models/permission.schema';
 
 export interface IRole {
   _id: string;
@@ -13,7 +13,7 @@ export class Role {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Permission' }] })
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Permission' }] })
   permissions: Permission[]; // Change to Types.ObjectId[]
 }
 
