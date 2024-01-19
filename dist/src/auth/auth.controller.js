@@ -17,37 +17,114 @@ const common_1 = require("@nestjs/common");
 const user_service_1 = require("../user/user.service");
 const register_dto_1 = require("./dto/register.dto");
 const argon2 = require("argon2");
+const jwt_1 = require("@nestjs/jwt");
+const auth_guard_1 = require("./auth.guard");
+const auth_service_1 = require("./auth.service");
 let AuthController = exports.AuthController = class AuthController {
-    constructor(userService) {
+    constructor(userService, jwtService, authService) {
         this.userService = userService;
+        this.jwtService = jwtService;
+        this.authService = authService;
     }
     async register(body, response) {
-        if (body.password !== body.confirm_password) {
-            throw new common_1.BadRequestException("Password do not match.");
-        }
         const existingUser = await this.userService.findByUsernameOrEmail(body.username, body.email);
         if (existingUser) {
             throw new common_1.BadRequestException('Username or email already exists');
         }
         const hashPassword = await argon2.hash(body.password);
-        response.status(200);
-        return this.userService.create({
+        const user = await this.userService.create({
+            fullName: body.fullname,
             username: body.username,
             email: body.email,
-            password: hashPassword
+            password: hashPassword,
+            role: "65a9c6ce8b30772f51cd1249"
+        });
+        const { password, ...data } = user.toObject();
+        return response.status(201).send(data);
+    }
+    async login(username, email, password, response, rememberMe) {
+        try {
+            let user;
+            if (email) {
+                user = await this.userService.findByEmail(email);
+            }
+            else {
+                user = await this.userService.findByUsername(username);
+            }
+            if (!user) {
+                throw new common_1.BadRequestException('Invalid Credentials');
+            }
+            if (!await argon2.verify(user.password, password)) {
+                throw new common_1.BadRequestException("Invalid Credentials");
+            }
+            const refreshTokenExpiration = rememberMe
+                ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+                : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+            const jwt = await this.jwtService.signAsync({ id: user._id });
+            response.setCookie('user_session', jwt, {
+                httpOnly: true,
+                expires: refreshTokenExpiration,
+                secure: true
+            });
+            response.status(200);
+            return {
+                message: "Successfully Logged In!"
+            };
+        }
+        catch (error) {
+            return new common_1.BadRequestException(error.message);
+        }
+    }
+    async user(request) {
+        const id = await this.authService.userId(request);
+        return await this.userService.findUserAndRole(id);
+    }
+    async logout(response) {
+        response.clearCookie('user_session', { path: '/api' });
+        return response.status(200).send({
+            message: "success"
         });
     }
 };
 __decorate([
     (0, common_1.Post)('register'),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Res)()),
+    __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [register_dto_1.RegisterDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
+__decorate([
+    (0, common_1.Post)('login'),
+    __param(0, (0, common_1.Body)('username')),
+    __param(1, (0, common_1.Body)('email')),
+    __param(2, (0, common_1.Body)('password')),
+    __param(3, (0, common_1.Res)({ passthrough: true })),
+    __param(4, (0, common_1.Body)('rememberMe')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, Object, Boolean]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, common_1.Get)('user'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "user", null);
+__decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, common_1.Post)('logout'),
+    __param(0, (0, common_1.Res)({ passthrough: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "logout", null);
 exports.AuthController = AuthController = __decorate([
-    (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [user_service_1.UserService])
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [user_service_1.UserService,
+        jwt_1.JwtService,
+        auth_service_1.AuthService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

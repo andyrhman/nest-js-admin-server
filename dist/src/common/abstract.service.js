@@ -12,6 +12,10 @@ class AbstractService {
         const created = new this.model(data);
         return created.save();
     }
+    async save(data) {
+        const created = new this.model(data);
+        return created.save();
+    }
     async seed(data) {
         const created = new this.model(data);
         return created.save();
@@ -27,9 +31,6 @@ class AbstractService {
     }
     async findById(id) {
         return this.model.findById(id).exec();
-    }
-    async findOneWithRelations(data, options) {
-        return this.model.findOne(data).populate(`${options}`).exec();
     }
     async findByEmail(email) {
         return this.model.findOne({ email }).exec();

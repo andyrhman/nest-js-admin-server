@@ -12,7 +12,12 @@ export abstract class AbstractService<T extends HydratedDocument<any>> {
         return this.model.find().exec();
     }
 
-    async create(data: Partial<T>): Promise<T> {
+    async create(data: object): Promise<T> {
+        const created = new this.model(data);
+        return created.save();
+    }
+
+    async save(data: Partial<T>): Promise<T> {
         const created = new this.model(data);
         return created.save();
     }
@@ -36,10 +41,6 @@ export abstract class AbstractService<T extends HydratedDocument<any>> {
 
     async findById(id: string): Promise<T | null> {
         return this.model.findById(id).exec();
-    }
-
-    async findOneWithRelations(data: any, options: any) {
-        return this.model.findOne(data).populate(`${options}`).exec();
     }
 
     async findByEmail(email: string): Promise<T | null> {

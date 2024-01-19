@@ -19,7 +19,7 @@ __decorate([
     __metadata("design:type", String)
 ], Role.prototype, "name", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ type: [{ type: mongoose_2.Types.ObjectId, ref: 'Permission' }] }),
+    (0, mongoose_1.Prop)({ type: [{ type: mongoose_2.default.Schema.Types.ObjectId, ref: 'Permission' }] }),
     __metadata("design:type", Array)
 ], Role.prototype, "permissions", void 0);
 exports.Role = Role = __decorate([
