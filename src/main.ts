@@ -2,9 +2,8 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import fastifyCookie from '@fastify/cookie';
-import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
+import mongoose from 'mongoose';
 
 async function bootstrap() {
   // ? Fastify
@@ -20,11 +19,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   // Using cookie parser for jwt
-  const configService = app.get(ConfigService);
-
-  await app.register(fastifyCookie, {
-    secret: configService.get('FASTIFY_COOKIE'), // for cookies signature
-  });
+  app.use(cookieParser());
 
   app.enableCors({
     origin: 'http://localhost:3000',

@@ -1,8 +1,7 @@
 // ? https://www.phind.com/search?cache=kgm7old15yxqkgw44w1796c4
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { Types, HydratedDocument } from 'mongoose';
 import { Role, RoleDocument } from 'src/role/models/role.schema';
-import mongoose from 'mongoose';
 
 export interface IUser {
   toObject(): any;
@@ -34,7 +33,7 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Role' })
+  @Prop({ type: Types.ObjectId, ref: 'Role' })
   role: Role;
 }
 

@@ -12,10 +12,6 @@ export class UserService extends AbstractService<UserDocument>{
         super(userModel)
     }
 
-    async findUserAndRole(id: string): Promise<UserDocument | null> {
-        return this.userModel.findById(id).populate('role').exec();
-    }
-
     async findAll(page: number = 1, limit: number = 1): Promise<{ data: UserDocument[], total: number, page: number, last_page: number }> {
         const skip = (page - 1) * limit;
         const total = await this.userModel.countDocuments().exec();
