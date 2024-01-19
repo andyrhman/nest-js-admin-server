@@ -92,14 +92,14 @@ export class UserController {
         const hashedPassword = await argon2.hash('123456');
 
         // Check if the username or email already exists
-        const emailExists = await User.findOne({ email: body.email.toLowerCase() });
-        const usernameExists = await User.findOne({ username: body.username.toLowerCase() });
+        const emailExists = await this.userService.findOne({ email: body.email.toLowerCase() });
+        const usernameExists = await this.userService.findOne({ username: body.username.toLowerCase() });
 
         if (emailExists || usernameExists) {
             throw new BadRequestException('Email or username already exists')
         }
 
-        const user = await User.create({
+        const user = await this.userService.create({
             fullName: body.fullname,
             username: body.username,
             email: body.email,
@@ -122,7 +122,7 @@ export class UserController {
             throw new BadRequestException('Invalid Request');
         }
 
-        const search = await User.findById(id);
+        const search = await this.userService.findById(id);
 
         if (!search) {
             throw new NotFoundException('User not found');

@@ -1,30 +1,30 @@
-import * as mongoose from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
 
-export interface IPermission extends Document {
+export interface IPermission {
   _id: string;
   name: string;
 }
 
-export const PermissionSchema = new mongoose.Schema({
-  name: { type: String, required: true }
-});
+export type PermissionDocument = HydratedDocument<IPermission>;
 
-export const Permission = mongoose.model<IPermission>('Permission', PermissionSchema);
+@Schema()
+export class Permission {
+  @Prop({ required: true })
+  name: string;
+}
 
-// import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-// import { HydratedDocument } from 'mongoose';
+export const PermissionSchema = SchemaFactory.createForClass(Permission);
 
-// export interface IPermission {
+// import * as mongoose from 'mongoose';
+
+// export interface IPermission extends Document {
 //   _id: string;
 //   name: string;
 // }
 
-// export type PermissionDocument = HydratedDocument<IPermission>;
+// export const PermissionSchema = new mongoose.Schema({
+//   name: { type: String, required: true }
+// });
 
-// @Schema()
-// export class Permission {
-//   @Prop({ required: true })
-//   name: string;
-// }
-
-// export const PermissionSchema = SchemaFactory.createForClass(Permission);
+// export const Permission = mongoose.model<IPermission>('Permission', PermissionSchema);

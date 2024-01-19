@@ -8,7 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleModule = void 0;
 const common_1 = require("@nestjs/common");
+const role_controller_1 = require("./role.controller");
+const role_service_1 = require("./role.service");
 const role_schema_1 = require("./models/role.schema");
+const permission_module_1 = require("../permission/permission.module");
 const mongoose_1 = require("@nestjs/mongoose");
 let RoleModule = exports.RoleModule = class RoleModule {
 };
@@ -16,7 +19,11 @@ exports.RoleModule = RoleModule = __decorate([
     (0, common_1.Module)({
         imports: [
             mongoose_1.MongooseModule.forFeature([{ name: 'Role', schema: role_schema_1.RoleSchema }]),
+            permission_module_1.PermissionModule
         ],
+        controllers: [role_controller_1.RoleController],
+        providers: [role_service_1.RoleService],
+        exports: [role_service_1.RoleService]
     })
 ], RoleModule);
 //# sourceMappingURL=role.module.js.map

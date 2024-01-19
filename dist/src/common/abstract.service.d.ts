@@ -22,13 +22,14 @@
 /// <reference types="mongoose/types/validation" />
 /// <reference types="mongoose/types/virtuals" />
 /// <reference types="mongoose/types/inferschematype" />
-import { Model } from "mongoose";
+import { HydratedDocument, Model } from "mongoose";
 import { IPaginationOptions, IPaginationResult } from "./paginated.interface";
-export declare abstract class AbstractService<T extends Document> {
+export declare abstract class AbstractService<T extends HydratedDocument<any>> {
     protected model: Model<T>;
     protected constructor(model: Model<T>);
     all(): Promise<T[]>;
     create(data: Partial<T>): Promise<T>;
+    seed(data: object): Promise<T>;
     update(id: string, data: Partial<T>): Promise<T | null>;
     delete(id: string): Promise<T | null>;
     findOne(options: object): Promise<T | null>;

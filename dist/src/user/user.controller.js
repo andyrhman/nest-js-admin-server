@@ -18,7 +18,6 @@ const user_service_1 = require("./user.service");
 const argon2 = require("argon2");
 const user_create_dto_1 = require("./models/user-create.dto");
 const mongoose_1 = require("mongoose");
-const user_schema_1 = require("./models/user.schema");
 const sanitizeHtml = require("sanitize-html");
 let UserController = exports.UserController = class UserController {
     constructor(userService) {
@@ -52,12 +51,12 @@ let UserController = exports.UserController = class UserController {
     }
     async create(body, response) {
         const hashedPassword = await argon2.hash('123456');
-        const emailExists = await user_schema_1.User.findOne({ email: body.email.toLowerCase() });
-        const usernameExists = await user_schema_1.User.findOne({ username: body.username.toLowerCase() });
+        const emailExists = await this.userService.findOne({ email: body.email.toLowerCase() });
+        const usernameExists = await this.userService.findOne({ username: body.username.toLowerCase() });
         if (emailExists || usernameExists) {
             throw new common_1.BadRequestException('Email or username already exists');
         }
-        const user = await user_schema_1.User.create({
+        const user = await this.userService.create({
             fullName: body.fullname,
             username: body.username,
             email: body.email,
@@ -71,7 +70,7 @@ let UserController = exports.UserController = class UserController {
         if (!(0, mongoose_1.isValidObjectId)(id)) {
             throw new common_1.BadRequestException('Invalid Request');
         }
-        const search = await user_schema_1.User.findById(id);
+        const search = await this.userService.findById(id);
         if (!search) {
             throw new common_1.NotFoundException('User not found');
         }

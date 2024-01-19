@@ -1,7 +1,7 @@
-import { Model } from "mongoose";
+import { HydratedDocument, Model } from "mongoose";
 import { IPaginationOptions, IPaginationResult } from "./paginated.interface";
 
-export abstract class AbstractService<T extends Document> {
+export abstract class AbstractService<T extends HydratedDocument<any>> {
     protected model: Model<T>;
 
     protected constructor(model: Model<T>) {
@@ -13,6 +13,11 @@ export abstract class AbstractService<T extends Document> {
     }
 
     async create(data: Partial<T>): Promise<T> {
+        const created = new this.model(data);
+        return created.save();
+    }
+
+    async seed(data: object): Promise<T> {
         const created = new this.model(data);
         return created.save();
     }

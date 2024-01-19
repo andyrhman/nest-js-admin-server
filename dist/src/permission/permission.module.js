@@ -8,7 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionModule = void 0;
 const common_1 = require("@nestjs/common");
+const permission_service_1 = require("./permission.service");
+const permission_controller_1 = require("./permission.controller");
 const permission_schema_1 = require("./models/permission.schema");
+const common_module_1 = require("../common/common.module");
 const mongoose_1 = require("@nestjs/mongoose");
 let PermissionModule = exports.PermissionModule = class PermissionModule {
 };
@@ -16,7 +19,11 @@ exports.PermissionModule = PermissionModule = __decorate([
     (0, common_1.Module)({
         imports: [
             mongoose_1.MongooseModule.forFeature([{ name: 'Permission', schema: permission_schema_1.PermissionSchema }]),
+            common_module_1.CommonModule
         ],
+        providers: [permission_service_1.PermissionService],
+        controllers: [permission_controller_1.PermissionController],
+        exports: [permission_service_1.PermissionService]
     })
 ], PermissionModule);
 //# sourceMappingURL=permission.module.js.map

@@ -12,14 +12,6 @@ async function bootstrap() {
     new FastifyAdapter()
   );
 
-  // ? Wait you can connect mongoose directly in main.ts?
-  mongoose.connect('mongodb://localhost/nest_admin')
-  .then(() => console.log('📖 Database has been initialized!'))
-  .catch((err) => console.error(err));
-
-  // ? Express
-  // const app = await NestFactory.create(AppModule);
-
   // Using api as the global url --> http://localhost:5000/api
   app.setGlobalPrefix('api');
 
@@ -35,5 +27,15 @@ async function bootstrap() {
   });
 
   await app.listen(8000, '0.0.0.0');
+
+  /* 
+    ? Wait you can connect mongoose directly in main.ts?
+    mongoose.connect('mongodb://localhost/nest_admin')
+    .then(() => console.log('📖 Database has been initialized!'))
+    .catch((err) => console.error(err));
+
+    ? Express
+    const app = await NestFactory.create(AppModule);
+ */
 }
 bootstrap();
