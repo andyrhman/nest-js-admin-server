@@ -15,17 +15,20 @@ const bootstrap = async () => {
     for (let i = 0; i < 30; i++) {
         const order = await orderService.create({
             name: faker.person.fullName(),
-            email: faker.internet.email()
+            email: faker.internet.email(),
+            order_items: []
         });
 
         for (let j = 0; j < randomInt(1, 5); j++) {
-            await orderItemService.create({
+            const orderItem = await orderItemService.create({
                 order: order,
                 product_title: faker.commerce.productName(),
                 price: faker.commerce.price({ min: 100, max: 1000, dec: 0 }),
                 quantity: randomInt(1, 5)
             });
+            order.order_items.push(orderItem);
         }
+        await order.save();
     }
     justForFun();
     process.exit()

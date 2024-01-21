@@ -1,12 +1,13 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { HydratedDocument } from "mongoose";
-import { Order, OrderDocument } from "./order.schema";
+import { Order } from "./order.schema";
 
 export interface IOrderItems {
+    _id: string;
     product_title: string;
     price: number;
     quantity: number;
-    order: OrderDocument;
+    order: string;
 }
 
 export type OrderItemDocument = HydratedDocument<IOrderItems>
