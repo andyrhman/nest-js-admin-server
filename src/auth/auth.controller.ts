@@ -1,8 +1,7 @@
 import { BadRequestException, Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { RegisterDto } from './dto/register.dto';
-import { FastifyReply } from 'fastify';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from './auth.guard';
@@ -19,7 +18,7 @@ export class AuthController {
     @Post('register')
     async register(
         @Body() body: RegisterDto,
-        @Res({ passthrough: true }) response: FastifyReply
+        @Res({ passthrough: true }) response: Response
     ) {
         // Check if the username or email already exists
         const existingUser = await this.userService.findByUsernameOrEmail(
@@ -52,7 +51,7 @@ export class AuthController {
         @Body('username') username: string,
         @Body('email') email: string,
         @Body('password') password: string,
-        @Res({ passthrough: true }) response: FastifyReply,
+        @Res({ passthrough: true }) response: Response,
         @Body('rememberMe') rememberMe?: boolean
     ) {
         try {
@@ -86,10 +85,10 @@ export class AuthController {
                 httpOnly: true,
                 expires: refreshTokenExpiration,
             });
-
-            return response.status(200).send({
+            response.status(200)
+            return {
                 message: "Successfully Logged In!"
-            });
+            };
         } catch (error) {
             return new BadRequestException(error.message)
         }
@@ -110,9 +109,9 @@ export class AuthController {
     @UseGuards(AuthGuard)
     @Post('logout')
     async logout(
-        @Res({ passthrough: true }) response: FastifyReply
+        @Res({ passthrough: true }) response: Response
     ) {
-        response.clearCookie('user_session', { path: '/api' });
+        response.clearCookie('user_session');
 
         return {
             message: "success"

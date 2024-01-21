@@ -91,7 +91,7 @@ let UserController = exports.UserController = class UserController {
         if (!existingUser) {
             throw new common_1.NotFoundException('User not found');
         }
-        const { username, email, role_id } = body;
+        const { username, email, role } = body;
         if (username && username !== existingUser.username) {
             const existingUsername = await this.userService.findByUsername(username);
             if (existingUsername) {
@@ -106,9 +106,9 @@ let UserController = exports.UserController = class UserController {
             }
             existingUser.email = email;
         }
-        if (role_id) {
-            const role = await this.roleService.findById(id);
-            if (!role) {
+        if (role) {
+            const findRole = await this.roleService.findById(role);
+            if (!findRole) {
                 throw new common_1.NotFoundException('Role not found');
             }
             existingUser.role = role;

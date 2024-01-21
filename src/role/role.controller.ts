@@ -14,7 +14,7 @@ import {
 import { RoleService } from './role.service';
 import { HasPermission } from 'src/permission/decorator/permission.decorator';
 import { isValidObjectId } from 'mongoose';
-import { FastifyReply } from 'fastify';
+import { Response } from 'express';
 import { PermissionService } from 'src/permission/permission.service';
 import { RoleDTO } from './dto/role.dto';
 
@@ -85,7 +85,7 @@ export class RoleController {
     async update(
         @Param('id') id: string,
         @Body() body: RoleDTO,
-        @Res({ passthrough: true }) response: FastifyReply
+        @Res({ passthrough: true }) response: Response
     ) {
         if (!isValidObjectId(id)) {
             throw new BadRequestException('Invalid Request');
@@ -129,7 +129,7 @@ export class RoleController {
     @HasPermission('roles')
     async delete(
         @Param('id') id: string,
-        @Res({ passthrough: true }) response: FastifyReply
+        @Res({ passthrough: true }) response: Response
     ) {
         if (!isValidObjectId(id)) {
             throw new BadRequestException('Invalid Request');

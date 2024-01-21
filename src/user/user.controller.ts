@@ -22,10 +22,8 @@ import { AuthGuard } from '../auth/auth.guard';
 import { isValidObjectId } from 'mongoose';
 import { RoleService } from 'src/role/role.service';
 import { Request, Response } from 'express';
-import { FastifyReply } from 'fastify';
 import { AuthService } from 'src/auth/auth.service';
 import { HasPermission } from 'src/permission/decorator/permission.decorator';
-import { User } from './models/user.schema';
 import { IPaginationOptions } from 'src/common/paginated.interface';
 import * as sanitizeHtml from 'sanitize-html';
 
@@ -85,7 +83,7 @@ export class UserController {
     @HasPermission('users')
     async create(
         @Body() body: UserCreateDto,
-        @Res({ passthrough: true }) response: FastifyReply
+        @Res({ passthrough: true }) response: Response
     ) {
         const hashedPassword = await argon2.hash('123456');
 
@@ -135,7 +133,7 @@ export class UserController {
     async update(
         @Param('id') id: string,
         @Body() body: any,
-        @Res({ passthrough: true }) response: FastifyReply
+        @Res({ passthrough: true }) response: Response
     ) {
         if (!isValidObjectId(id)) {
             throw new BadRequestException('Invalid Request');
@@ -147,7 +145,7 @@ export class UserController {
             throw new NotFoundException('User not found');
         }
 
-        const { username, email, role_id } = body;
+        const { username, email, role } = body;
 
         // Check if username already exists and is different from the existing one
         if (username && username !== existingUser.username) {
@@ -168,9 +166,9 @@ export class UserController {
         }
 
         // Update the role if role_id is provided
-        if (role_id) {
-            const role = await this.roleService.findById(id);
-            if (!role) {
+        if (role) {
+            const findRole = await this.roleService.findById(role);
+            if (!findRole) {
                 throw new NotFoundException('Role not found');
             }
             existingUser.role = role;
@@ -187,7 +185,7 @@ export class UserController {
     @HasPermission('users')
     async delete(
         @Param('id') id: string,
-        @Res({ passthrough: true }) response: FastifyReply
+        @Res({ passthrough: true }) response: Response
     ) {
         if (!isValidObjectId(id)) {
             throw new BadRequestException('Invalid Request');
@@ -204,7 +202,7 @@ export class UserController {
     async updateInfo(
         @Req() request: Request,
         @Body() body: any,
-        @Res({ passthrough: true }) response: FastifyReply
+        @Res({ passthrough: true }) response: Response
     ) {
         const id = await this.authService.userId(request);
         const existingUser = await this.userService.findById(id);
@@ -240,7 +238,7 @@ export class UserController {
     async updatePassword(
         @Req() request: Request,
         @Body() body: any,
-        @Res({ passthrough: true }) response: FastifyReply
+        @Res({ passthrough: true }) response: Response
     ) {
         if (body.password !== body.confirm_password) {
             throw new BadRequestException("Password do not match.");

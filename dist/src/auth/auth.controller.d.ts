@@ -26,8 +26,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { RegisterDto } from './dto/register.dto';
-import { FastifyReply } from 'fastify';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 export declare class AuthController {
@@ -35,12 +34,14 @@ export declare class AuthController {
     private jwtService;
     private authService;
     constructor(userService: UserService, jwtService: JwtService, authService: AuthService);
-    register(body: RegisterDto, response: FastifyReply): Promise<never>;
-    login(username: string, email: string, password: string, response: FastifyReply, rememberMe?: boolean): Promise<BadRequestException>;
+    register(body: RegisterDto, response: Response): Promise<Response<any, Record<string, any>>>;
+    login(username: string, email: string, password: string, response: Response, rememberMe?: boolean): Promise<BadRequestException | {
+        message: string;
+    }>;
     user(request: Request): Promise<import("mongoose").Document<unknown, {}, import("../user/models/user.schema").IUser> & import("../user/models/user.schema").IUser & {
         _id: import("mongoose").Types.ObjectId;
     }>;
-    logout(response: FastifyReply): Promise<{
+    logout(response: Response): Promise<{
         message: string;
     }>;
 }

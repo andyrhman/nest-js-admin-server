@@ -18,6 +18,7 @@ const role_module_1 = require("./role/role.module");
 const permission_module_1 = require("./permission/permission.module");
 const mongoose_1 = require("@nestjs/mongoose");
 const auth_module_1 = require("./auth/auth.module");
+const product_module_1 = require("./product/product.module");
 let AppModule = exports.AppModule = class AppModule {
 };
 exports.AppModule = AppModule = __decorate([
@@ -31,6 +32,7 @@ exports.AppModule = AppModule = __decorate([
             role_module_1.RoleModule,
             permission_module_1.PermissionModule,
             auth_module_1.AuthModule,
+            product_module_1.ProductModule,
         ],
         providers: [
             {

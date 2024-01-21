@@ -26,8 +26,7 @@
 import { UserService } from './user.service';
 import { UserCreateDto } from './models/user-create.dto';
 import { RoleService } from 'src/role/role.service';
-import { Request } from 'express';
-import { FastifyReply } from 'fastify';
+import { Request, Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 export declare class UserController {
     private userService;
@@ -48,7 +47,7 @@ export declare class UserController {
         }[];
         meta: import("src/common/paginated.interface").IPaginationMeta;
     }>;
-    create(body: UserCreateDto, response: FastifyReply): Promise<never>;
+    create(body: UserCreateDto, response: Response): Promise<Response<any, Record<string, any>>>;
     get(id: string): Promise<{
         toObject(): any;
         fullName: string;
@@ -60,8 +59,8 @@ export declare class UserController {
         }>;
         _id: import("mongoose").Types.ObjectId;
     }>;
-    update(id: string, body: any, response: FastifyReply): Promise<never>;
-    delete(id: string, response: FastifyReply): Promise<never>;
-    updateInfo(request: Request, body: any, response: FastifyReply): Promise<never>;
-    updatePassword(request: Request, body: any, response: FastifyReply): Promise<never>;
+    update(id: string, body: any, response: Response): Promise<Response<any, Record<string, any>>>;
+    delete(id: string, response: Response): Promise<Response<any, Record<string, any>>>;
+    updateInfo(request: Request, body: any, response: Response): Promise<Response<any, Record<string, any>>>;
+    updatePassword(request: Request, body: any, response: Response): Promise<Response<any, Record<string, any>>>;
 }

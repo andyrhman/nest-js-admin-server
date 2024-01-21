@@ -65,9 +65,10 @@ let AuthController = exports.AuthController = class AuthController {
                 httpOnly: true,
                 expires: refreshTokenExpiration,
             });
-            return response.status(200).send({
+            response.status(200);
+            return {
                 message: "Successfully Logged In!"
-            });
+            };
         }
         catch (error) {
             return new common_1.BadRequestException(error.message);
@@ -78,7 +79,7 @@ let AuthController = exports.AuthController = class AuthController {
         return this.userService.findUserAndPopulate(id);
     }
     async logout(response) {
-        response.clearCookie('user_session', { path: '/api' });
+        response.clearCookie('user_session');
         return {
             message: "success"
         };
