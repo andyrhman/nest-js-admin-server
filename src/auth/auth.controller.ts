@@ -111,7 +111,7 @@ export class AuthController {
     async logout(
         @Res({ passthrough: true }) response: Response
     ) {
-        response.clearCookie('user_session');
+        response.clearCookie('user_session', { path: '/api' });
 
         return {
             message: "success"

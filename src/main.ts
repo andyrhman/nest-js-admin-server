@@ -1,11 +1,23 @@
 import { NestFactory } from '@nestjs/core';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import fastifyCookie from '@fastify/cookie';
+import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   // ? Express
-  const app = await NestFactory.create(AppModule);
+  // const app = await NestFactory.create(AppModule);
+
+  //? Fastify
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter()
+  );
 
   // Using api as the global url --> http://localhost:5000/api
   app.setGlobalPrefix('api');
@@ -19,8 +31,12 @@ async function bootstrap() {
   });
 
   // Using cookie parser for jwt
-  app.use(cookieParser());
-
+  // app.use(cookieParser());
+  // Using cookie parser for jwt
+  const configService = app.get(ConfigService);
+  await app.register(fastifyCookie, {
+    secret: configService.get('FASTIFY_COOKIE'), // for cookies signature
+  });
   await app.listen(8000);
 
   /* 

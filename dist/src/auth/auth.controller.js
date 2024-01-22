@@ -79,7 +79,7 @@ let AuthController = exports.AuthController = class AuthController {
         return this.userService.findUserAndPopulate(id);
     }
     async logout(response) {
-        response.clearCookie('user_session');
+        response.clearCookie('user_session', { path: '/api' });
         return {
             message: "success"
         };

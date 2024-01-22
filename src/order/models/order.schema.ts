@@ -12,7 +12,16 @@ export interface IOrder {
 
 export type OrderDocument = HydratedDocument<IOrder>
 
-@Schema()
+@Schema({
+    virtuals: {
+        total: {
+            get(): number {
+                return this.order_items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+            }
+        }
+    },
+    toJSON: { virtuals: true }
+})
 export class Order {
     @Prop({ type: String })
     name: string;
